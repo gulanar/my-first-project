@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>Real cases · DataLens</title>
+  <meta name="description" content="Part 4 of DataLens: famous viral claims and headlines analysed step by step, a claim X-ray tool and a before-you-share checklist.">
+  <!-- @head:start -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e4fd6">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/datalens.css">
+  <script>
+    (function () {
+      var d = document.documentElement, s = {};
+      try { s = JSON.parse(localStorage.getItem("datalens:v1")) || {}; } catch (e) {}
+      var q = /[?&]lang=(ar|en)/.exec(location.search);
+      var l = q ? q[1] : s.lang || "ar";
+      d.lang = l;
+      d.dir = l === "ar" ? "rtl" : "ltr";
+      if (s.theme === "dark" || s.theme === "light") d.setAttribute("data-theme", s.theme);
+      d.classList.add("js");
+    })();
+  </script>
+  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/chart.js" defer></script>
+  <!-- @head:end -->
+  <script src="assets/js/part4.js" defer></script>
+</head>
+<body data-page="cases" data-title-ar="حالات واقعية · عدسة البيانات" data-title-en="Real cases · DataLens">
+  <!-- @nav:start -->
+  <a class="skip-link" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+  <div class="read-progress" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+        <span class="brand__name">
+          <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+          <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+        </span>
+      </a>
+      <nav aria-label="Main" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة الرئيسية" data-aria-label-en="Main">
+        <ul class="nav__links" id="nav-links">
+          <li><a class="nav__link" data-nav="home" href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a></li>
+          <li><a class="nav__link" data-nav="charts" href="charts.html"><span class="nav__num">01</span><span lang="ar">الرسوم المضلِّلة</span><span lang="en">Charts</span></a></li>
+          <li><a class="nav__link" data-nav="traps" href="traps.html"><span class="nav__num">02</span><span lang="ar">الفخاخ الإحصائية</span><span lang="en">Traps</span></a></li>
+          <li><a class="nav__link" data-nav="ai" href="ai.html"><span class="nav__num">03</span><span lang="ar">الذكاء الاصطناعي</span><span lang="en">AI check</span></a></li>
+          <li><a class="nav__link" data-nav="cases" href="cases.html"><span class="nav__num">04</span><span lang="ar">حالات واقعية</span><span lang="en">Real cases</span></a></li>
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <button class="tool-btn" type="button" data-lang-toggle>
+          <svg class="ic" aria-hidden="true"><use href="#i-globe"></use></svg><span class="lang-label">EN</span>
+        </button>
+        <button class="tool-btn theme-btn" type="button" data-theme-toggle data-i18n-attrs="aria-label" data-aria-label-ar="الوضع الداكن" data-aria-label-en="Dark mode" aria-label="الوضع الداكن">
+          <svg class="ic ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="ic ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+        <a class="nav__cta" href="quiz.html" data-nav="quiz">
+          <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+          <span><span lang="ar">التحدي</span><span lang="en">Challenge</span></span>
+        </a>
+        <button class="tool-btn nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة" data-aria-label-en="Menu" aria-label="القائمة">
+          <svg class="ic" aria-hidden="true"><use href="#i-menu"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- @nav:end -->
+
+  <main id="main">
+    <!-- =============================== HERO =============================== -->
+    <section class="page-hero">
+      <div class="container page-hero__grid">
+        <div>
+          <nav class="crumbs enter" aria-label="Breadcrumb">
+            <a href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a>
+            <svg class="ic flip-rtl" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            <span><span lang="ar">الجزء الرابع</span><span lang="en">Part 4</span></span>
+          </nav>
+          <div class="part-tag enter" style="--d:60ms">
+            <span class="part-tag__num"><span lang="ar">الجزء 4 من 4</span><span lang="en">Part 4 of 4</span></span>
+            <span class="part-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
+          </div>
+          <h1 class="enter" style="--d:120ms">
+            <span lang="ar">ادعاءات منتشرة <span class="hl hl-anim">تحت العدسة</span></span>
+            <span lang="en">Viral claims <span class="hl hl-anim">under the lens</span></span>
+          </h1>
+          <p class="page-hero__lede enter" style="--d:180ms">
+            <span lang="ar">ثماني حالات حقيقية من التلفزيون والإعلانات والصحف ووسائل التواصل. افتح كل حالة وتتبّع التحليل خطوة بخطوة: الادعاء، والإشارات الحمراء، وما تقوله الأدلة، والدرس.</span>
+            <span lang="en">Eight real cases from TV, advertising, newspapers and social media. Open each one and follow the analysis step by step: the claim, the red flags, what the evidence says and the lesson.</span>
+          </p>
+        </div>
+        <div class="page-hero__visual enter" style="--d:200ms" aria-hidden="true">
+          <div class="orbit">
+            <div class="orbit__core">
+              <svg viewBox="0 0 24 24" class="ic" style="width:56%;height:56%;color:var(--redpen)"><use href="#i-news"></use></svg>
+            </div>
+            <span class="note-chip note-chip--1 mono"><svg class="ic"><use href="#i-pie"></use></svg>193%</span>
+            <span class="note-chip note-chip--2 mono" style="--d:1s"><svg class="ic"><use href="#i-users"></use></svg>2.4M</span>
+            <span class="note-chip note-chip--3" style="--d:2s"><svg class="ic"><use href="#i-alert"></use></svg><span lang="ar">مضلِّل</span><span lang="en">misleading</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="subnav" aria-label="Sections" data-i18n-attrs="aria-label" data-aria-label-ar="أقسام الصفحة" data-aria-label-en="Sections">
+      <div class="container">
+        <ul class="subnav__list">
+          <li><a href="#cases"><span class="mono">01</span><span lang="ar">الحالات</span><span lang="en">The cases</span></a></li>
+          <li><a href="#xray"><span class="mono">02</span><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></a></li>
+          <li><a href="#share"><span class="mono">03</span><span lang="ar">قبل أن تشارك</span><span lang="en">Before you share</span></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- =============================== CASES =============================== -->
+    <section class="section" id="cases">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">ملف القضايا</span><span lang="en">The case files</span></span>
+            <h2><span lang="ar">ثماني حالات، ثماني خدع</span><span lang="en">Eight cases, eight tricks</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">صفِّ الحالات حسب نوع الخدعة. الأرقام والتواريخ منقولة عن المصادر المذكورة في كل حالة؛ ابحث عنها بنفسك من زر «تحقّق بنفسك».</span>
+            <span lang="en">Filter the cases by type of trick. Numbers and dates come from the sources named in each case; look them up yourself with the "Verify it yourself" button.</span>
+          </p>
+        </div>
+        <div class="chip-row reveal" id="caseFilters" role="group" style="margin-bottom:22px">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true"><span lang="ar">الكل</span><span lang="en">All</span></button>
+          <button class="chip" type="button" data-filter="charts" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-bars"></use></svg><span lang="ar">رسوم</span><span lang="en">Charts</span></button>
+          <button class="chip" type="button" data-filter="sampling" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-users"></use></svg><span lang="ar">عيّنات</span><span lang="en">Sampling</span></button>
+          <button class="chip" type="button" data-filter="causation" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-link"></use></svg><span lang="ar">سببية</span><span lang="en">Causation</span></button>
+          <button class="chip" type="button" data-filter="risk" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-percent"></use></svg><span lang="ar">مخاطر</span><span lang="en">Risk</span></button>
+          <button class="chip" type="button" data-filter="small" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-dice"></use></svg><span lang="ar">عيّنة صغيرة</span><span lang="en">Small sample</span></button>
+        </div>
+        <div class="case-grid" id="caseGrid" aria-live="polite"></div>
+      </div>
+    </section>
+
+    <!-- =============================== X-RAY =============================== -->
+    <section class="section section--soft" id="xray">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">أداة</span><span lang="en">Tool</span></span>
+            <h2><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">الصق عنوانًا أو منشورًا. تبحث الأداة عن كلمات تستحق التوقف عندها وتقترح سؤالًا لكل منها. إنها قائمة تذكير، لا كاشف حقيقة: العنوان النظيف قد يكون خاطئًا أيضًا.</span>
+            <span lang="en">Paste a headline or post. The tool looks for words worth pausing on and suggests a question for each. It's a reminder list, not a truth detector: a clean-looking headline can still be wrong.</span>
+          </p>
+        </div>
+        <div class="xray reveal">
+          <div class="xray__in">
+            <div class="field">
+              <label for="xInput"><span lang="ar">العنوان أو المنشور</span><span lang="en">Headline or post</span></label>
+              <textarea class="textarea" id="xInput" rows="4" data-i18n-attrs="placeholder" data-placeholder-ar="الصق العنوان هنا…" data-placeholder-en="Paste the headline here…"></textarea>
+            </div>
+            <div class="chip-row" id="xExamples"></div>
+            <div class="field">
+              <span class="field__label"><span lang="ar">ما تراه الأشعة</span><span lang="en">What the X-ray sees</span></span>
+              <div class="xray__mark" id="xMarked" aria-live="polite"></div>
+            </div>
+          </div>
+          <div class="xray__out">
+            <div class="gauge">
+              <div class="gauge__ring" id="xGauge"><span id="xScore">0</span></div>
+              <div>
+                <strong id="xLevel"></strong>
+                <p class="txt-muted" style="font-size:.9rem" id="xLevelNote"></p>
+              </div>
+            </div>
+            <ul class="flag-list" id="xFlags"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== SHARE CHECKLIST =============================== -->
+    <section class="section" id="share">
+      <div class="container narrow">
+        <div class="section-head section-head--center">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">عادة يومية</span><span lang="en">A daily habit</span></span>
+            <h2><span lang="ar">قبل أن تضغط «مشاركة»</span><span lang="en">Before you hit "share"</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">أول أربعة بنود من طريقة SIFT التي طوّرها الباحث في الثقافة الرقمية مايك كولفيلد، ومعها بندان إحصائيان. ضع علامة على كل ما فعلته.</span>
+            <span lang="en">The first four items come from the SIFT method developed by digital-literacy researcher Mike Caulfield; two statistical checks complete the list. Tick each one you've done.</span>
+          </p>
+        </div>
+        <div class="share-meter reveal">
+          <svg class="ic" aria-hidden="true" style="color:var(--truth)"><use href="#i-shield"></use></svg>
+          <span id="shareLabel"></span>
+          <div class="share-meter__bar"><span id="shareBar"></span></div>
+          <span class="mono" id="shareCount">0/6</span>
+        </div>
+        <div class="share-list reveal" id="shareList" style="margin-top:14px">
+          <label class="check"><input type="checkbox" data-share="stop"><span><strong><span lang="ar">توقّف.</span><span lang="en">Stop.</span></strong> <span lang="ar">هل يثير المنشور غضبك أو حماسك بشدة؟ هذا بالضبط وقت التمهّل.</span><span lang="en">Does the post make you angry or excited? That's exactly when to slow down.</span></span></label>
+          <label class="check"><input type="checkbox" data-share="investigate"><span><strong><span lang="ar">افحص المصدر.</span><span lang="en">Investigate the source.</span></strong> <span lang="ar">من نشره؟ وما خبرته ومصلحته؟</span><span lang="en">Who posted it, and what is their expertise and agenda?</span></span></label>
+          <label class="check"><input type="checkbox" data-share="find"><span><strong><span lang="ar">ابحث عن تغطية أفضل.</span><span lang="en">Find better coverage.</span></strong> <span lang="ar">هل نقلت مصادر موثوقة الخبر نفسه؟</span><span lang="en">Have trusted outlets reported the same thing?</span></span></label>
+          <label class="check"><input type="checkbox" data-share="trace"><span><strong><span lang="ar">تتبّع الأصل.</span><span lang="en">Trace it to the original.</span></strong> <span lang="ar">هل وجدت الدراسة أو الجدول أو التقرير الأصلي؟</span><span lang="en">Did you find the original study, table or report?</span></span></label>
+          <label class="check"><input type="checkbox" data-share="numbers"><span><strong><span lang="ar">اقرأ الرقم كاملًا.</span><span lang="en">Read the full number.</span></strong> <span lang="ar">نسبي أم مطلق؟ من أين يبدأ المحور؟ ما حجم العيّنة؟</span><span lang="en">Relative or absolute? Where does the axis start? How big was the sample?</span></span></label>
+          <label class="check"><input type="checkbox" data-share="date"><span><strong><span lang="ar">تحقّق من التاريخ.</span><span lang="en">Check the date.</span></strong> <span lang="ar">الأخبار القديمة تعود للانتشار كأنها جديدة.</span><span lang="en">Old stories often resurface as if they were new.</span></span></label>
+        </div>
+        <div style="margin-top:14px;text-align:center">
+          <button class="btn btn--sm btn--ghost" type="button" id="shareReset"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">امسح القائمة</span><span lang="en">Clear the list</span></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== NEXT =============================== -->
+    <section class="next-band">
+      <div class="container next-band__inner">
+        <div class="reveal">
+          <h2><span lang="ar">أنهيت الأجزاء الأربعة. حان وقت التحدي.</span><span lang="en">You've finished all four parts. Time for the challenge.</span></h2>
+          <p>
+            <span lang="ar">12 رسمًا بيانيًا و10 أسئلة. هل تستطيع أن تميّز الصادق من المضلِّل؟</span>
+            <span lang="en">12 charts and 10 questions. Can you tell the honest from the misleading?</span>
+          </p>
+        </div>
+        <div class="next-band__actions reveal">
+          <a class="btn btn--primary" href="quiz.html"><span lang="ar">ابدأ التحدي</span><span lang="en">Take the challenge</span><svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <button class="btn btn--ghost" type="button" data-complete></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog class="modal" id="caseModal" aria-labelledby="caseTitle">
+    <div class="modal__head">
+      <div style="flex:1;min-width:0">
+        <p class="case-card__src" id="caseMeta" style="margin-bottom:6px"></p>
+        <h2 id="caseTitle"></h2>
+      </div>
+      <button class="tool-btn" type="button" data-close data-i18n-attrs="aria-label" data-aria-label-ar="إغلاق" data-aria-label-en="Close" aria-label="إغلاق"><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg></button>
+    </div>
+    <div class="modal__body">
+      <div class="steps" id="caseSteps" role="tablist"></div>
+      <div id="casePanel"></div>
+    </div>
+    <div class="modal__foot">
+      <a class="btn btn--sm btn--ghost" id="caseSearch" href="#" target="_blank" rel="noopener"><svg class="ic" aria-hidden="true"><use href="#i-external"></use></svg><span lang="ar">تحقّق بنفسك</span><span lang="en">Verify it yourself</span></a>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn--sm btn--ghost" type="button" id="casePrev"><span lang="ar">السابق</span><span lang="en">Back</span></button>
+        <button class="btn btn--sm btn--primary" type="button" id="caseNext"></button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- @footer:start -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html">
+            <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+            <span class="brand__name">
+              <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+              <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+            </span>
+          </a>
+          <p lang="ar">منصة تفاعلية تعلّم غير المتخصصين كيف يكتشفون الأرقام المضلِّلة في الأخبار والإعلانات ووسائل التواصل وإجابات الذكاء الاصطناعي.</p>
+          <p lang="en">An interactive platform that teaches non-specialists to spot misleading numbers in the news, ads, social media and AI answers.</p>
+        </div>
+        <div>
+          <h4><span lang="ar">تعلّم</span><span lang="en">Learn</span></h4>
+          <ul>
+            <li><a href="charts.html"><span lang="ar">01 · الرسوم المضلِّلة</span><span lang="en">01 · Misleading charts</span></a></li>
+            <li><a href="traps.html"><span lang="ar">02 · الفخاخ الإحصائية</span><span lang="en">02 · Statistical traps</span></a></li>
+            <li><a href="ai.html"><span lang="ar">03 · الذكاء الاصطناعي مدقِّقًا</span><span lang="en">03 · AI as a fact-checker</span></a></li>
+            <li><a href="cases.html"><span lang="ar">04 · حالات واقعية</span><span lang="en">04 · Real cases</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4><span lang="ar">تدرّب</span><span lang="en">Practice</span></h4>
+          <ul>
+            <li><a href="quiz.html"><span lang="ar">هل هذا الرسم صادق؟</span><span lang="en">Is this chart honest?</span></a></li>
+            <li><a href="charts.html#spot"><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></a></li>
+            <li><a href="ai.html#builder"><span lang="ar">مُنشئ أسئلة التحقق</span><span lang="en">Fact-check prompt builder</span></a></li>
+            <li><a href="cases.html#xray"><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© <span data-year>2026</span> <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span></span>
+        <span lang="ar">الأمثلة الموسومة بـ«توضيحي» تستخدم أرقامًا مصطنعة؛ الحالات الواقعية تذكر مصادرها.</span>
+        <span lang="en">Examples marked "illustrative" use made-up numbers; real cases name their sources.</span>
+      </div>
+    </div>
+  </footer>
+  <button class="to-top" type="button" data-i18n-attrs="aria-label" data-aria-label-ar="العودة إلى الأعلى" data-aria-label-en="Back to top" aria-label="العودة إلى الأعلى">
+    <svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23"/></svg>
+    <svg class="ic" aria-hidden="true"><use href="#i-up"></use></svg>
+  </button>
+  <!-- @footer:end -->
+</body>
+</html>

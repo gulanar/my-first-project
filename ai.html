@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>AI fact-checking · DataLens</title>
+  <meta name="description" content="Part 3 of DataLens: use ChatGPT, Claude or Gemini to question a statistic, build a fact-check prompt, and learn to spot the numbers AI makes up.">
+  <!-- @head:start -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e4fd6">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/datalens.css">
+  <script>
+    (function () {
+      var d = document.documentElement, s = {};
+      try { s = JSON.parse(localStorage.getItem("datalens:v1")) || {}; } catch (e) {}
+      var q = /[?&]lang=(ar|en)/.exec(location.search);
+      var l = q ? q[1] : s.lang || "ar";
+      d.lang = l;
+      d.dir = l === "ar" ? "rtl" : "ltr";
+      if (s.theme === "dark" || s.theme === "light") d.setAttribute("data-theme", s.theme);
+      d.classList.add("js");
+    })();
+  </script>
+  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/chart.js" defer></script>
+  <!-- @head:end -->
+  <script src="assets/js/part3.js" defer></script>
+</head>
+<body data-page="ai" data-title-ar="الذكاء الاصطناعي مدقِّقًا · عدسة البيانات" data-title-en="AI fact-checking · DataLens">
+  <!-- @nav:start -->
+  <a class="skip-link" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+  <div class="read-progress" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+        <span class="brand__name">
+          <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+          <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+        </span>
+      </a>
+      <nav aria-label="Main" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة الرئيسية" data-aria-label-en="Main">
+        <ul class="nav__links" id="nav-links">
+          <li><a class="nav__link" data-nav="home" href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a></li>
+          <li><a class="nav__link" data-nav="charts" href="charts.html"><span class="nav__num">01</span><span lang="ar">الرسوم المضلِّلة</span><span lang="en">Charts</span></a></li>
+          <li><a class="nav__link" data-nav="traps" href="traps.html"><span class="nav__num">02</span><span lang="ar">الفخاخ الإحصائية</span><span lang="en">Traps</span></a></li>
+          <li><a class="nav__link" data-nav="ai" href="ai.html"><span class="nav__num">03</span><span lang="ar">الذكاء الاصطناعي</span><span lang="en">AI check</span></a></li>
+          <li><a class="nav__link" data-nav="cases" href="cases.html"><span class="nav__num">04</span><span lang="ar">حالات واقعية</span><span lang="en">Real cases</span></a></li>
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <button class="tool-btn" type="button" data-lang-toggle>
+          <svg class="ic" aria-hidden="true"><use href="#i-globe"></use></svg><span class="lang-label">EN</span>
+        </button>
+        <button class="tool-btn theme-btn" type="button" data-theme-toggle data-i18n-attrs="aria-label" data-aria-label-ar="الوضع الداكن" data-aria-label-en="Dark mode" aria-label="الوضع الداكن">
+          <svg class="ic ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="ic ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+        <a class="nav__cta" href="quiz.html" data-nav="quiz">
+          <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+          <span><span lang="ar">التحدي</span><span lang="en">Challenge</span></span>
+        </a>
+        <button class="tool-btn nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة" data-aria-label-en="Menu" aria-label="القائمة">
+          <svg class="ic" aria-hidden="true"><use href="#i-menu"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- @nav:end -->
+
+  <main id="main">
+    <!-- =============================== HERO =============================== -->
+    <section class="page-hero">
+      <div class="container page-hero__grid">
+        <div>
+          <nav class="crumbs enter" aria-label="Breadcrumb">
+            <a href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a>
+            <svg class="ic flip-rtl" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            <span><span lang="ar">الجزء الثالث</span><span lang="en">Part 3</span></span>
+          </nav>
+          <div class="part-tag enter" style="--d:60ms">
+            <span class="part-tag__num"><span lang="ar">الجزء 3 من 4</span><span lang="en">Part 3 of 4</span></span>
+            <span class="part-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+          </div>
+          <h1 class="enter" style="--d:120ms">
+            <span lang="ar">الذكاء الاصطناعي <span class="hl hl-anim">مدقِّقًا</span></span>
+            <span lang="en">AI as a <span class="hl hl-anim">fact-checker</span></span>
+          </h1>
+          <p class="page-hero__lede enter" style="--d:180ms">
+            <span lang="ar">يستطيع ChatGPT وClaude وGemini مساعدتك على مساءلة إحصائية في ثوانٍ، بشرط أن تسأل بالطريقة الصحيحة. لكنها قد تخترع أرقامًا ومصادر بثقة تامة. هنا تتعلّم الأمرين.</span>
+            <span lang="en">ChatGPT, Claude and Gemini can help you question a statistic in seconds, if you ask the right way. They can also invent numbers and sources with total confidence. Here you learn both.</span>
+          </p>
+        </div>
+        <div class="page-hero__visual enter" style="--d:200ms" aria-hidden="true">
+          <div class="orbit">
+            <div class="orbit__core">
+              <svg viewBox="0 0 24 24" class="ic" style="width:56%;height:56%;color:var(--lens)"><use href="#i-bot"></use></svg>
+            </div>
+            <span class="note-chip note-chip--1"><svg class="ic"><use href="#i-help"></use></svg><span lang="ar">ما المصدر؟</span><span lang="en">Source?</span></span>
+            <span class="note-chip note-chip--2 mono" style="--d:1s"><svg class="ic"><use href="#i-alert"></use></svg>23.7%?</span>
+            <span class="note-chip note-chip--3" style="--d:2s"><svg class="ic"><use href="#i-link"></use></svg><span lang="ar">افتح الرابط</span><span lang="en">Open the link</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="subnav" aria-label="Sections" data-i18n-attrs="aria-label" data-aria-label-ar="أقسام الصفحة" data-aria-label-en="Sections">
+      <div class="container">
+        <ul class="subnav__list">
+          <li><a href="#limits"><span class="mono">01</span><span lang="ar">القوة والحدود</span><span lang="en">Strengths &amp; limits</span></a></li>
+          <li><a href="#workflow"><span class="mono">02</span><span lang="ar">خطوات التحقق</span><span lang="en">The workflow</span></a></li>
+          <li><a href="#builder"><span class="mono">03</span><span lang="ar">مُنشئ الأسئلة</span><span lang="en">Prompt builder</span></a></li>
+          <li><a href="#library"><span class="mono">04</span><span lang="ar">مكتبة الأسئلة</span><span lang="en">Prompt library</span></a></li>
+          <li><a href="#hallucination"><span class="mono">05</span><span lang="ar">اكشف الهلوسة</span><span lang="en">Spot the hallucination</span></a></li>
+          <li><a href="#rules"><span class="mono">06</span><span lang="ar">القواعد الذهبية</span><span lang="en">Golden rules</span></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- =============================== LIMITS =============================== -->
+    <section class="section" id="limits">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">قبل أن تبدأ</span><span lang="en">Before you start</span></span>
+            <h2><span lang="ar">شريك نقاش، لا مصدر للحقيقة</span><span lang="en">A sparring partner, not a source</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">نماذج اللغة تتنبأ بالكلمات المرجّحة، لا تبحث في قاعدة حقائق. لذلك تبرع في الشرح وطرح الأسئلة، وتتعثر حين تحتاج إلى رقم دقيق من مصدر محدد.</span>
+            <span lang="en">Language models predict likely words; they don't look facts up in a database. That makes them great at explaining and asking questions, and unreliable when you need an exact number from a specific source.</span>
+          </p>
+        </div>
+        <div class="vs" data-stagger="120">
+          <div class="vs__col reveal reveal--side">
+            <h3><span class="card__icon card__icon--truth" style="margin:0"><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg></span><span lang="ar">أين يساعدك</span><span lang="en">Where AI helps</span></h3>
+            <ul class="ticks">
+              <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span><span lang="ar"><b>يشرح المفاهيم</b> بلغة بسيطة: ماذا يعني «ذو دلالة إحصائية» في هذا الخبر؟</span><span lang="en"><b>Explains concepts</b> in plain words: what does "statistically significant" mean in this story?</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span><span lang="ar"><b>يقترح الأسئلة</b> التي يجب طرحها، والبيانات التي تحتاجها للتحقق.</span><span lang="en"><b>Suggests the questions</b> to ask and the data you would need to check a claim.</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span><span lang="ar"><b>يلتقط حيل الصياغة</b>: نسبي أم مطلق، «يصل إلى»، «مرتبط بـ».</span><span lang="en"><b>Catches wording tricks</b>: relative vs absolute, "up to", "linked to".</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span><span lang="ar"><b>يعيد الحساب</b> على أرقام تعطيه إياها، خطوة بخطوة (وراجع الخطوات).</span><span lang="en"><b>Redoes the arithmetic</b> on numbers you give it, step by step (and you check the steps).</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span><span lang="ar"><b>يقترح تفسيرات بديلة</b>: عوامل خفية، وسببية معكوسة، وصدفة.</span><span lang="en"><b>Offers other explanations</b>: hidden factors, reverse causation, chance.</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span><span lang="ar"><b>يعيد كتابة العنوان المثير</b> بكلمات دقيقة ومحايدة.</span><span lang="en"><b>Rewrites a sensational headline</b> in accurate, neutral words.</span></span></li>
+            </ul>
+          </div>
+          <div class="vs__col reveal reveal--side">
+            <h3><span class="card__icon card__icon--trick" style="margin:0"><svg class="ic" aria-hidden="true"><use href="#i-alert"></use></svg></span><span lang="ar">أين يخطئ</span><span lang="en">Where AI goes wrong</span></h3>
+            <ul class="ticks ticks--bad">
+              <li><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg><span><span lang="ar"><b>يخترع أرقامًا</b> تبدو دقيقة («37.2%») بلا مصدر حقيقي.</span><span lang="en"><b>Invents numbers</b> that sound precise ("37.2%") with no real source.</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg><span><span lang="ar"><b>يختلق مراجع</b>: دراسات ومؤلفين وروابط غير موجودة.</span><span lang="en"><b>Makes up citations</b>: studies, authors and links that don't exist.</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg><span><span lang="ar"><b>يعتمد على بيانات قديمة</b> ما لم يكن قادرًا على البحث، وقد لا يخبرك بذلك.</span><span lang="en"><b>Uses outdated data</b> unless it can search the web, and may not tell you.</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg><span><span lang="ar"><b>يجاملك</b>: يوافق على طريقة صياغتك للسؤال («أليس صحيحًا أن…؟»).</span><span lang="en"><b>Agrees with you</b>: it tends to go along with how you frame the question ("Isn't it true that…?").</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg><span><span lang="ar"><b>يسيء قراءة الرسوم</b> والصور، خصوصًا المحاور والحروف الصغيرة.</span><span lang="en"><b>Misreads charts</b> and images, especially axes and small print.</span></span></li>
+              <li><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg><span><span lang="ar"><b>يتعثر في الحسابات الطويلة</b> وتحويل الوحدات، ويبدو واثقًا بالقدر نفسه.</span><span lang="en"><b>Slips on long calculations</b> and unit conversions, and sounds just as confident.</span></span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== WORKFLOW =============================== -->
+    <section class="section section--soft" id="workflow">
+      <div class="container narrow">
+        <div class="section-head section-head--center">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">طريقة عمل</span><span lang="en">A method</span></span>
+            <h2><span lang="ar">التحقق من إحصائية في خمس خطوات</span><span lang="en">Check a statistic in five steps</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">الذكاء الاصطناعي يدخل في الخطوات الوسطى. الخطوة الأولى والأخيرة عليك أنت.</span>
+            <span lang="en">AI helps with the middle steps. The first and last are yours.</span>
+          </p>
+        </div>
+        <div class="timeline-wrap" id="timeline">
+        <span class="timeline__fill" aria-hidden="true"></span>
+        <ol class="timeline">
+          <li class="timeline__item reveal">
+            <span class="timeline__dot">1</span>
+            <div class="timeline__body">
+              <h3><span lang="ar">اعزل الادعاء</span><span lang="en">Isolate the claim</span></h3>
+              <p><span lang="ar">اكتب الرقم بالضبط: من قاله؟ ومتى؟ ومقارنةً بماذا؟</span><span lang="en">Write down the exact number: who said it, when, and compared with what?</span></p>
+              <p class="say"><span lang="ar">الادعاء: «ارتفعت الجريمة 300% في 2025». المصدر: منشور منتشر. التاريخ: غير معروف.</span><span lang="en">Claim: "Crime rose 300% in 2025". Source: viral post. Date: unknown.</span></p>
+            </div>
+          </li>
+          <li class="timeline__item reveal">
+            <span class="timeline__dot">2</span>
+            <div class="timeline__body">
+              <h3><span lang="ar">اطلب التشريح، لا التأكيد</span><span lang="en">Ask AI to dissect, not to confirm</span></h3>
+              <p><span lang="ar">الصياغة المحايدة تعطي إجابات أفضل من «أليس صحيحًا أن…».</span><span lang="en">Neutral wording gets better answers than "Isn't it true that…".</span></p>
+              <p class="say"><span lang="ar">«ماذا أحتاج أن أعرف لأحكم على هذا الادعاء؟ لا تخبرني بعد إن كان صحيحًا.»</span><span lang="en">"What would I need to know to judge this claim? Don't tell me yet whether it's true."</span></p>
+            </div>
+          </li>
+          <li class="timeline__item reveal">
+            <span class="timeline__dot">3</span>
+            <div class="timeline__body">
+              <h3><span lang="ar">اطلب المصادر، ثم افتحها</span><span lang="en">Demand sources, then open them</span></h3>
+              <p><span lang="ar">اطلب المصدر الأصلي: جهة إحصاء رسمية أو دراسة منشورة. اضغط كل رابط: هل هو موجود؟ وهل يقول ما ادّعاه الذكاء الاصطناعي؟</span><span lang="en">Ask for the primary source: an official statistics office or a published study. Click every link: does it exist, and does it say what the AI claims?</span></p>
+              <p class="say"><span lang="ar">«أي مصدر أصلي قد يحتوي هذا الرقم؟ إن لم تكن متأكدًا من وجوده فقل ذلك.»</span><span lang="en">"Which original source would contain this number? If you're not sure it exists, say so."</span></p>
+            </div>
+          </li>
+          <li class="timeline__item reveal">
+            <span class="timeline__dot">4</span>
+            <div class="timeline__body">
+              <h3><span lang="ar">ابحث عن السياق الناقص</span><span lang="en">Probe for missing context</span></h3>
+              <p><span lang="ar">نقطة البداية، والمقام، والفترة الزمنية، والعيّنة، والتفسيرات البديلة.</span><span lang="en">Base rates, denominators, time range, sample and alternative explanations.</span></p>
+              <p class="say"><span lang="ar">«هل 300% زيادة نسبية؟ ما الرقم الذي بدأنا منه؟»</span><span lang="en">"Is 300% a relative change? What number did it start from?"</span></p>
+            </div>
+          </li>
+          <li class="timeline__item reveal">
+            <span class="timeline__dot">5</span>
+            <div class="timeline__body">
+              <h3><span lang="ar">تحقّق خارج المحادثة</span><span lang="en">Verify outside the chat</span></h3>
+              <p><span lang="ar">لا تمنح الذكاء الاصطناعي الكلمة الأخيرة أبدًا: راجع المصدر الأصلي بنفسك، أو جهة تدقيق معروفة.</span><span lang="en">AI never gets the last word: check the primary source yourself, or a reputable fact-checker.</span></p>
+              <p class="say"><span lang="ar">ابحث في موقع جهة الإحصاء الرسمية عن الجدول الأصلي.</span><span lang="en">Search the official statistics website for the original table.</span></p>
+            </div>
+          </li>
+        </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== BUILDER =============================== -->
+    <section class="section" id="builder">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">أداة</span><span lang="en">Tool</span></span>
+            <h2><span lang="ar">مُنشئ أسئلة التحقق</span><span lang="en">Fact-check prompt builder</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">الصق ادعاءً، واختر ما تريد فحصه، ثم انسخ السؤال الجاهز إلى المساعد الذي تفضّله. يعمل مع أي مساعد ذكي.</span>
+            <span lang="en">Paste a claim, choose what to check, then copy the finished prompt into the assistant you prefer. It works with any AI assistant.</span>
+          </p>
+        </div>
+        <div class="builder reveal">
+          <form class="builder__in" id="builderForm" novalidate>
+            <div class="field">
+              <label for="bClaim"><span lang="ar">الادعاء أو العنوان</span><span lang="en">The claim or headline</span></label>
+              <textarea class="textarea" id="bClaim" rows="3" data-i18n-attrs="placeholder" data-placeholder-ar="الصق هنا ادعاءً رأيته…" data-placeholder-en="Paste a claim you saw…"></textarea>
+              <div class="chip-row" id="bExamples" aria-label="Examples"></div>
+            </div>
+            <div class="field">
+              <label for="bWhere"><span lang="ar">أين رأيته؟</span><span lang="en">Where did you see it?</span></label>
+              <select class="select" id="bWhere">
+                <option value="social"></option>
+                <option value="news"></option>
+                <option value="ad"></option>
+                <option value="friend"></option>
+                <option value="ai"></option>
+              </select>
+            </div>
+            <fieldset class="field" style="border:0;padding:0;margin:0">
+              <legend class="field__label" style="font-weight:600;font-size:.93rem;margin-bottom:8px"><span lang="ar">ماذا تريد أن تفحص؟</span><span lang="en">What should it check?</span></legend>
+              <div class="checks" id="bChecks"></div>
+            </fieldset>
+            <div class="field">
+              <span class="field__label"><span lang="ar">أسلوب الإجابة</span><span lang="en">Answer style</span></span>
+              <div class="seg" id="bStyle" role="group">
+                <button type="button" data-value="simple" aria-pressed="true"><span lang="ar">بسيط وقصير</span><span lang="en">Simple &amp; short</span></button>
+                <button type="button" data-value="detailed" aria-pressed="false"><span lang="ar">مفصّل</span><span lang="en">Detailed</span></button>
+              </div>
+            </div>
+          </form>
+          <div class="builder__out">
+            <h3><svg class="ic" aria-hidden="true"><use href="#i-sparkle"></use></svg><span lang="ar">السؤال الجاهز</span><span lang="en">Your prompt</span></h3>
+            <div class="prompt-out" id="bOut" aria-live="polite"></div>
+            <div class="builder__actions">
+              <button class="btn btn--primary btn--sm" type="button" id="bCopy"><svg class="ic" aria-hidden="true"><use href="#i-copy"></use></svg><span lang="ar">انسخ السؤال</span><span lang="en">Copy prompt</span></button>
+              <button class="btn btn--ghost btn--sm" type="button" id="bReset"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">ابدأ من جديد</span><span lang="en">Start over</span></button>
+            </div>
+            <div class="tool-links">
+              <span><span lang="ar">انسخ ثم افتح:</span><span lang="en">Copy, then open:</span></span>
+              <a href="https://chatgpt.com/" target="_blank" rel="noopener" data-open-ai>ChatGPT <svg class="ic" aria-hidden="true"><use href="#i-external"></use></svg></a>
+              <a href="https://claude.ai/new" target="_blank" rel="noopener" data-open-ai>Claude <svg class="ic" aria-hidden="true"><use href="#i-external"></use></svg></a>
+              <a href="https://gemini.google.com/app" target="_blank" rel="noopener" data-open-ai>Gemini <svg class="ic" aria-hidden="true"><use href="#i-external"></use></svg></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== LIBRARY =============================== -->
+    <section class="section section--soft" id="library">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">جاهزة للنسخ</span><span lang="en">Ready to copy</span></span>
+            <h2><span lang="ar">مكتبة أسئلة التحقق</span><span lang="en">The fact-check prompt library</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">اثنا عشر سؤالًا مجرّبًا لستة أنواع من الفحص. استبدل ما بين الأقواس المربعة بما يناسب حالتك.</span>
+            <span lang="en">Twelve tested prompts for six kinds of check. Replace anything in square brackets with your own details.</span>
+          </p>
+        </div>
+        <div class="chip-row reveal" id="libFilters" style="margin-bottom:22px" role="group">
+          <button class="chip" type="button" data-filter="all" aria-pressed="true"><span lang="ar">الكل</span><span lang="en">All</span></button>
+          <button class="chip" type="button" data-filter="dissect" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-lens"></use></svg><span lang="ar">التشريح</span><span lang="en">Dissect</span></button>
+          <button class="chip" type="button" data-filter="sources" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-link"></use></svg><span lang="ar">المصادر</span><span lang="en">Sources</span></button>
+          <button class="chip" type="button" data-filter="numbers" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-percent"></use></svg><span lang="ar">الأرقام</span><span lang="en">Numbers</span></button>
+          <button class="chip" type="button" data-filter="charts" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-bars"></use></svg><span lang="ar">الرسوم</span><span lang="en">Charts</span></button>
+          <button class="chip" type="button" data-filter="bias" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-users"></use></svg><span lang="ar">التحيّز</span><span lang="en">Bias</span></button>
+          <button class="chip" type="button" data-filter="self" aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-bot"></use></svg><span lang="ar">مراجعة الذات</span><span lang="en">Self-check</span></button>
+        </div>
+        <div class="prompt-grid" id="libGrid"></div>
+      </div>
+    </section>
+
+    <!-- =============================== HALLUCINATION =============================== -->
+    <section class="section" id="hallucination">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">تدرّب</span><span lang="en">Practice</span></span>
+            <h2><span lang="ar">اكشف الهلوسة</span><span lang="en">Spot the hallucination</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">هذه محادثة خيالية لكنها واقعية الشكل. اضغط على كل جملة تراها مريبة، ثم اضغط «افحص إشاراتي». بعض الجمل سليمة.</span>
+            <span lang="en">This conversation is fictional but realistic. Click every sentence that looks suspicious, then press "Check my flags". Some sentences are fine.</span>
+          </p>
+        </div>
+        <div class="chat reveal">
+          <div class="chat__bar">
+            <span style="display:inline-flex;align-items:center;gap:8px;font-weight:600"><svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg><span lang="ar">مساعد ذكي (محادثة تدريبية)</span><span lang="en">AI assistant (training chat)</span></span>
+            <span class="badge badge--warn"><span lang="ar">محادثة خيالية للتدريب</span><span lang="en">Fictional, for training</span></span>
+          </div>
+          <div class="chat__body">
+            <div class="msg msg--user">
+              <span class="msg__av"><svg class="ic" aria-hidden="true"><use href="#i-users"></use></svg></span>
+              <div class="msg__bubble" id="chatQ"></div>
+            </div>
+            <div class="msg msg--ai">
+              <span class="msg__av"><svg class="ic" aria-hidden="true"><use href="#i-bot"></use></svg></span>
+              <div class="msg__bubble" id="chatA"><span class="typing" aria-label="typing"><i></i><i></i><i></i></span></div>
+            </div>
+          </div>
+          <div class="chat__foot">
+            <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px">
+              <span class="txt-muted" id="chatCount"></span>
+              <div style="display:flex;flex-wrap:wrap;gap:8px">
+                <button class="btn btn--sm btn--ghost" type="button" id="chatReset"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">أعد المحاولة</span><span lang="en">Try again</span></button>
+                <button class="btn btn--sm btn--primary" type="button" id="chatCheck"><svg class="ic" aria-hidden="true"><use href="#i-lens"></use></svg><span lang="ar">افحص إشاراتي</span><span lang="en">Check my flags</span></button>
+              </div>
+            </div>
+            <ul class="flag-list" id="chatResult" aria-live="polite"></ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== RULES =============================== -->
+    <section class="section section--soft" id="rules">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">احفظها</span><span lang="en">Remember these</span></span>
+            <h2><span lang="ar">أربع قواعد ذهبية</span><span lang="en">Four golden rules</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">تنطبق القواعد نفسها على ChatGPT وClaude وGemini وأي مساعد آخر: فعّل البحث على الإنترنت إن كان متاحًا في نسختك، واضغط كل رابط.</span>
+            <span lang="en">The same rules apply to ChatGPT, Claude, Gemini and any other assistant: turn on web search if your version has it, and click every link.</span>
+          </p>
+        </div>
+        <div class="grid grid-4" data-stagger="90">
+          <article class="card spot reveal">
+            <div class="card__icon"><svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg></div>
+            <h3><span lang="ar">شريك نقاش، لا مرجع</span><span lang="en">A sparring partner, not a reference</span></h3>
+            <p><span lang="ar">استخدمه ليساعدك على التفكير، لا ليكون الدليل نفسه.</span><span lang="en">Use it to help you think, never as the evidence itself.</span></p>
+          </article>
+          <article class="card spot reveal">
+            <div class="card__icon card__icon--trick"><svg class="ic" aria-hidden="true"><use href="#i-link"></use></svg></div>
+            <h3><span lang="ar">لا رابط، لا رقم</span><span lang="en">No link, no number</span></h3>
+            <p><span lang="ar">أي رقم بلا مصدر يمكنك فتحه وقراءته هو مجرد اقتراح.</span><span lang="en">A number without a source you can open and read is only a suggestion.</span></p>
+          </article>
+          <article class="card spot reveal">
+            <div class="card__icon card__icon--warn"><svg class="ic" aria-hidden="true"><use href="#i-shuffle"></use></svg></div>
+            <h3><span lang="ar">اسأل مرتين وقارن</span><span lang="en">Ask twice and compare</span></h3>
+            <p><span lang="ar">اطرح السؤال في محادثة جديدة. إن تغيّر الرقم، فهو على الأرجح مخترَع.</span><span lang="en">Ask again in a new chat. If the number changes, it was probably made up.</span></p>
+          </article>
+          <article class="card spot reveal">
+            <div class="card__icon card__icon--truth"><svg class="ic" aria-hidden="true"><use href="#i-shield"></use></svg></div>
+            <h3><span lang="ar">المصدر الأصلي له الكلمة الأخيرة</span><span lang="en">The primary source has the last word</span></h3>
+            <p><span lang="ar">جهة الإحصاء أو الدراسة الأصلية، لا ملخص المساعد عنها.</span><span lang="en">The statistics office or the original study, not the assistant's summary of it.</span></p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== NEXT =============================== -->
+    <section class="next-band">
+      <div class="container next-band__inner">
+        <div class="reveal">
+          <h2><span lang="ar">جاهز للعالم الحقيقي؟</span><span lang="en">Ready for the real world?</span></h2>
+          <p>
+            <span lang="ar">الجزء الرابع يضع كل ما تعلمته أمام ادعاءات حقيقية انتشرت على نطاق واسع، من فطيرة الـ193% إلى استطلاع 1936 الشهير.</span>
+            <span lang="en">Part 4 puts everything you've learned to work on real claims that went viral, from the 193% pie to the famous 1936 poll.</span>
+          </p>
+        </div>
+        <div class="next-band__actions reveal">
+          <a class="btn btn--primary" href="cases.html"><span lang="ar">الجزء الرابع: حالات واقعية</span><span lang="en">Part 4: Real cases</span><svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <button class="btn btn--ghost" type="button" data-complete></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @footer:start -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html">
+            <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+            <span class="brand__name">
+              <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+              <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+            </span>
+          </a>
+          <p lang="ar">منصة تفاعلية تعلّم غير المتخصصين كيف يكتشفون الأرقام المضلِّلة في الأخبار والإعلانات ووسائل التواصل وإجابات الذكاء الاصطناعي.</p>
+          <p lang="en">An interactive platform that teaches non-specialists to spot misleading numbers in the news, ads, social media and AI answers.</p>
+        </div>
+        <div>
+          <h4><span lang="ar">تعلّم</span><span lang="en">Learn</span></h4>
+          <ul>
+            <li><a href="charts.html"><span lang="ar">01 · الرسوم المضلِّلة</span><span lang="en">01 · Misleading charts</span></a></li>
+            <li><a href="traps.html"><span lang="ar">02 · الفخاخ الإحصائية</span><span lang="en">02 · Statistical traps</span></a></li>
+            <li><a href="ai.html"><span lang="ar">03 · الذكاء الاصطناعي مدقِّقًا</span><span lang="en">03 · AI as a fact-checker</span></a></li>
+            <li><a href="cases.html"><span lang="ar">04 · حالات واقعية</span><span lang="en">04 · Real cases</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4><span lang="ar">تدرّب</span><span lang="en">Practice</span></h4>
+          <ul>
+            <li><a href="quiz.html"><span lang="ar">هل هذا الرسم صادق؟</span><span lang="en">Is this chart honest?</span></a></li>
+            <li><a href="charts.html#spot"><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></a></li>
+            <li><a href="ai.html#builder"><span lang="ar">مُنشئ أسئلة التحقق</span><span lang="en">Fact-check prompt builder</span></a></li>
+            <li><a href="cases.html#xray"><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© <span data-year>2026</span> <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span></span>
+        <span lang="ar">الأمثلة الموسومة بـ«توضيحي» تستخدم أرقامًا مصطنعة؛ الحالات الواقعية تذكر مصادرها.</span>
+        <span lang="en">Examples marked "illustrative" use made-up numbers; real cases name their sources.</span>
+      </div>
+    </div>
+  </footer>
+  <button class="to-top" type="button" data-i18n-attrs="aria-label" data-aria-label-ar="العودة إلى الأعلى" data-aria-label-en="Back to top" aria-label="العودة إلى الأعلى">
+    <svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23"/></svg>
+    <svg class="ic" aria-hidden="true"><use href="#i-up"></use></svg>
+  </button>
+  <!-- @footer:end -->
+</body>
+</html>

@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>Is this chart honest? · DataLens</title>
+  <meta name="description" content="The DataLens challenge: decide whether 12 charts are honest or misleading, then test yourself on 10 questions about statistical traps and AI fact-checking.">
+  <!-- @head:start -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e4fd6">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/datalens.css">
+  <script>
+    (function () {
+      var d = document.documentElement, s = {};
+      try { s = JSON.parse(localStorage.getItem("datalens:v1")) || {}; } catch (e) {}
+      var q = /[?&]lang=(ar|en)/.exec(location.search);
+      var l = q ? q[1] : s.lang || "ar";
+      d.lang = l;
+      d.dir = l === "ar" ? "rtl" : "ltr";
+      if (s.theme === "dark" || s.theme === "light") d.setAttribute("data-theme", s.theme);
+      d.classList.add("js");
+    })();
+  </script>
+  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/chart.js" defer></script>
+  <!-- @head:end -->
+  <script src="assets/js/quiz.js" defer></script>
+</head>
+<body data-page="quiz" data-title-ar="هل هذا الرسم صادق؟ · عدسة البيانات" data-title-en="Is this chart honest? · DataLens">
+  <!-- @nav:start -->
+  <a class="skip-link" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+  <div class="read-progress" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+        <span class="brand__name">
+          <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+          <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+        </span>
+      </a>
+      <nav aria-label="Main" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة الرئيسية" data-aria-label-en="Main">
+        <ul class="nav__links" id="nav-links">
+          <li><a class="nav__link" data-nav="home" href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a></li>
+          <li><a class="nav__link" data-nav="charts" href="charts.html"><span class="nav__num">01</span><span lang="ar">الرسوم المضلِّلة</span><span lang="en">Charts</span></a></li>
+          <li><a class="nav__link" data-nav="traps" href="traps.html"><span class="nav__num">02</span><span lang="ar">الفخاخ الإحصائية</span><span lang="en">Traps</span></a></li>
+          <li><a class="nav__link" data-nav="ai" href="ai.html"><span class="nav__num">03</span><span lang="ar">الذكاء الاصطناعي</span><span lang="en">AI check</span></a></li>
+          <li><a class="nav__link" data-nav="cases" href="cases.html"><span class="nav__num">04</span><span lang="ar">حالات واقعية</span><span lang="en">Real cases</span></a></li>
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <button class="tool-btn" type="button" data-lang-toggle>
+          <svg class="ic" aria-hidden="true"><use href="#i-globe"></use></svg><span class="lang-label">EN</span>
+        </button>
+        <button class="tool-btn theme-btn" type="button" data-theme-toggle data-i18n-attrs="aria-label" data-aria-label-ar="الوضع الداكن" data-aria-label-en="Dark mode" aria-label="الوضع الداكن">
+          <svg class="ic ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="ic ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+        <a class="nav__cta" href="quiz.html" data-nav="quiz">
+          <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+          <span><span lang="ar">التحدي</span><span lang="en">Challenge</span></span>
+        </a>
+        <button class="tool-btn nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة" data-aria-label-en="Menu" aria-label="القائمة">
+          <svg class="ic" aria-hidden="true"><use href="#i-menu"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- @nav:end -->
+
+  <main id="main">
+    <!-- =============================== HERO =============================== -->
+    <section class="page-hero">
+      <div class="container page-hero__grid">
+        <div>
+          <nav class="crumbs enter" aria-label="Breadcrumb">
+            <a href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a>
+            <svg class="ic flip-rtl" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            <span><span lang="ar">التحدي</span><span lang="en">The challenge</span></span>
+          </nav>
+          <div class="part-tag enter" style="--d:60ms">
+            <span class="part-tag__num"><span lang="ar">الاختبار النهائي</span><span lang="en">Final challenge</span></span>
+          </div>
+          <h1 class="enter" style="--d:120ms">
+            <span lang="ar">هل هذا الرسم <span class="hl hl-anim">صادق؟</span></span>
+            <span lang="en">Is this chart <span class="hl hl-anim">honest?</span></span>
+          </h1>
+          <p class="page-hero__lede enter" style="--d:180ms">
+            <span lang="ar">اختبر عينك على 12 رسمًا بيانيًا: اسحب البطاقة يمينًا إن كان صادقًا ويسارًا إن كان مضلِّلًا، أو استخدم الأزرار والأسهم. ثم جرّب 10 أسئلة عن الفخاخ الإحصائية والذكاء الاصطناعي.</span>
+            <span lang="en">Test your eye on 12 charts: swipe the card right if it's honest and left if it's misleading, or use the buttons and arrow keys. Then try 10 questions on statistical traps and AI.</span>
+          </p>
+        </div>
+        <div class="page-hero__visual enter" style="--d:200ms" aria-hidden="true">
+          <div class="orbit">
+            <div class="orbit__core">
+              <svg viewBox="0 0 24 24" class="ic" style="width:56%;height:56%;color:var(--amber)"><use href="#i-trophy"></use></svg>
+            </div>
+            <span class="note-chip note-chip--1"><svg class="ic"><use href="#i-bars"></use></svg><span lang="ar">12 رسمًا</span><span lang="en">12 charts</span></span>
+            <span class="note-chip note-chip--2" style="--d:1s"><svg class="ic"><use href="#i-help"></use></svg><span lang="ar">10 أسئلة</span><span lang="en">10 questions</span></span>
+            <span class="note-chip note-chip--3" style="--d:2s"><svg class="ic"><use href="#i-swipe"></use></svg><span lang="ar">اسحب للإجابة</span><span lang="en">swipe to answer</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== PLAY =============================== -->
+    <section class="section" id="play">
+      <div class="container">
+        <div class="mode-grid" id="modes" role="group" style="margin-bottom:36px">
+          <button class="mode-card" type="button" data-mode="chart" aria-pressed="true">
+            <span class="card__icon"><svg class="ic" aria-hidden="true"><use href="#i-bars"></use></svg></span>
+            <span class="mode-card__title"><span lang="ar">صادق أم مضلِّل؟</span><span lang="en">Honest or misleading?</span></span>
+            <span class="mode-card__text"><span lang="ar">12 رسمًا بيانيًا. قرّر بسرعة، ثم اقرأ لماذا.</span><span lang="en">12 charts. Decide fast, then read why.</span></span>
+            <span class="mode-card__meta">
+              <span class="badge"><span lang="ar">12 جولة</span><span lang="en">12 rounds</span></span>
+              <span class="badge badge--truth" data-best="chart"></span>
+            </span>
+          </button>
+          <button class="mode-card" type="button" data-mode="quiz" aria-pressed="false">
+            <span class="card__icon card__icon--teal"><svg class="ic" aria-hidden="true"><use href="#i-list"></use></svg></span>
+            <span class="mode-card__title"><span lang="ar">اختبار الفخاخ</span><span lang="en">The trap quiz</span></span>
+            <span class="mode-card__text"><span lang="ar">10 أسئلة من الأجزاء الأربعة، مع شرح لكل إجابة.</span><span lang="en">10 questions from all four parts, with an explanation for each answer.</span></span>
+            <span class="mode-card__meta">
+              <span class="badge"><span lang="ar">10 أسئلة</span><span lang="en">10 questions</span></span>
+              <span class="badge badge--truth" data-best="quiz"></span>
+            </span>
+          </button>
+        </div>
+
+        <!-- Chart challenge -->
+        <div class="game" id="gameChart">
+          <div class="game__hud">
+            <strong id="cRound"></strong>
+            <div class="hud-stats">
+              <span class="hud-pill"><svg class="ic" aria-hidden="true" style="color:var(--truth)"><use href="#i-check"></use></svg><span id="cScore">0</span></span>
+              <span class="hud-pill" id="cStreakPill"><svg class="ic" aria-hidden="true"><use href="#i-flame"></use></svg><span id="cStreak">0</span></span>
+            </div>
+          </div>
+          <div class="game__bar" role="progressbar" aria-valuemin="0" aria-valuemax="12" id="cBar"><span></span></div>
+          <div class="deck">
+            <div class="deck__shadow" aria-hidden="true"></div>
+            <article class="swipe-card" id="cCard" tabindex="0" data-i18n-attrs="aria-label" data-aria-label-ar="بطاقة الرسم. السهم الأيمن: صادق، السهم الأيسر: مضلِّل." data-aria-label-en="Chart card. Right arrow: honest, left arrow: misleading.">
+              <span class="swipe-stamp swipe-stamp--honest" id="cStampH"><span lang="ar">صادق</span><span lang="en">Honest</span></span>
+              <span class="swipe-stamp swipe-stamp--trick" id="cStampM"><span lang="ar">مضلِّل</span><span lang="en">Misleading</span></span>
+              <div class="swipe-card__stage" id="cStage"></div>
+              <p class="swipe-card__ctx" id="cCtx"></p>
+            </article>
+          </div>
+          <div class="answer-row">
+            <button class="answer-btn answer-btn--trick" type="button" id="cMis"><svg class="ic" aria-hidden="true"><use href="#i-x"></use></svg><span lang="ar">مضلِّل</span><span lang="en">Misleading</span><kbd>←</kbd></button>
+            <button class="answer-btn answer-btn--honest" type="button" id="cHon"><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span lang="ar">صادق</span><span lang="en">Honest</span><kbd>→</kbd></button>
+          </div>
+          <div id="cReveal" aria-live="polite"></div>
+        </div>
+
+        <!-- Trap quiz -->
+        <div class="game" id="gameQuiz" hidden>
+          <div class="game__hud">
+            <strong id="qRound"></strong>
+            <div class="hud-stats">
+              <span class="hud-pill"><svg class="ic" aria-hidden="true" style="color:var(--truth)"><use href="#i-check"></use></svg><span id="qScore">0</span></span>
+            </div>
+          </div>
+          <div class="game__bar" role="progressbar" aria-valuemin="0" aria-valuemax="10" id="qBar"><span></span></div>
+          <div id="qCard"></div>
+        </div>
+
+        <!-- Results -->
+        <div class="game" id="results" hidden></div>
+      </div>
+    </section>
+
+    <!-- =============================== TIPS =============================== -->
+    <section class="section section--soft section--tight">
+      <div class="container">
+        <div class="grid grid-3" data-stagger="90">
+          <div class="callout reveal" style="border-inline-start-color:var(--lens)">
+            <svg class="ic" aria-hidden="true" style="color:var(--lens)"><use href="#i-ruler"></use></svg>
+            <div><h4><span lang="ar">ابدأ بالمحاور</span><span lang="en">Start with the axes</span></h4><p><span lang="ar">من أين يبدأ كل محور؟ وفي أي اتجاه يكبر؟ وهل المسافات منتظمة؟</span><span lang="en">Where does each axis start, which way does it grow, and are the gaps even?</span></p></div>
+          </div>
+          <div class="callout reveal" style="border-inline-start-color:var(--teal)">
+            <svg class="ic" aria-hidden="true" style="color:var(--teal)"><use href="#i-eye"></use></svg>
+            <div><h4><span lang="ar">اقرأ الحروف الصغيرة</span><span lang="en">Read the small print</span></h4><p><span lang="ar">«تراكمي»، «لكل 100 ألف»، «توضيحي»: كلمة واحدة تغيّر المعنى.</span><span lang="en">"Cumulative", "per 100,000", "illustrative": one word can change the meaning.</span></p></div>
+          </div>
+          <div class="callout reveal" style="border-inline-start-color:var(--redpen)">
+            <svg class="ic" aria-hidden="true" style="color:var(--redpen)"><use href="#i-alert"></use></svg>
+            <div><h4><span lang="ar">ليس كل محور مقطوع خدعة</span><span lang="en">Not every cut axis is a trick</span></h4><p><span lang="ar">الأعمدة تحتاج الصفر، أما الخطوط التي تعرض التغيّر فقد لا تحتاجه إن كانت أرقامها واضحة.</span><span lang="en">Bars need zero; lines that show change may not, if their numbers are clearly labelled.</span></p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== NEXT =============================== -->
+    <section class="next-band">
+      <div class="container next-band__inner">
+        <div class="reveal">
+          <h2><span lang="ar">العدسة الآن بين يديك.</span><span lang="en">The lens is yours now.</span></h2>
+          <p>
+            <span lang="ar">ارجع إلى أي جزء لتراجع ما فاتك، أو شارك المنصة مع شخص يشارك الأرقام دون أن يتحقق منها.</span>
+            <span lang="en">Go back to any part to review what you missed, or share the site with someone who forwards numbers without checking them.</span>
+          </p>
+        </div>
+        <div class="next-band__actions reveal">
+          <a class="btn btn--primary" href="index.html#journey"><span lang="ar">راجع مسار التعلّم</span><span lang="en">Review the learning path</span><svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <button class="btn btn--ghost" type="button" id="shareSite"><svg class="ic" aria-hidden="true"><use href="#i-link"></use></svg><span lang="ar">انسخ رابط المنصة</span><span lang="en">Copy the site link</span></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @footer:start -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html">
+            <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+            <span class="brand__name">
+              <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+              <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+            </span>
+          </a>
+          <p lang="ar">منصة تفاعلية تعلّم غير المتخصصين كيف يكتشفون الأرقام المضلِّلة في الأخبار والإعلانات ووسائل التواصل وإجابات الذكاء الاصطناعي.</p>
+          <p lang="en">An interactive platform that teaches non-specialists to spot misleading numbers in the news, ads, social media and AI answers.</p>
+        </div>
+        <div>
+          <h4><span lang="ar">تعلّم</span><span lang="en">Learn</span></h4>
+          <ul>
+            <li><a href="charts.html"><span lang="ar">01 · الرسوم المضلِّلة</span><span lang="en">01 · Misleading charts</span></a></li>
+            <li><a href="traps.html"><span lang="ar">02 · الفخاخ الإحصائية</span><span lang="en">02 · Statistical traps</span></a></li>
+            <li><a href="ai.html"><span lang="ar">03 · الذكاء الاصطناعي مدقِّقًا</span><span lang="en">03 · AI as a fact-checker</span></a></li>
+            <li><a href="cases.html"><span lang="ar">04 · حالات واقعية</span><span lang="en">04 · Real cases</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4><span lang="ar">تدرّب</span><span lang="en">Practice</span></h4>
+          <ul>
+            <li><a href="quiz.html"><span lang="ar">هل هذا الرسم صادق؟</span><span lang="en">Is this chart honest?</span></a></li>
+            <li><a href="charts.html#spot"><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></a></li>
+            <li><a href="ai.html#builder"><span lang="ar">مُنشئ أسئلة التحقق</span><span lang="en">Fact-check prompt builder</span></a></li>
+            <li><a href="cases.html#xray"><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© <span data-year>2026</span> <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span></span>
+        <span lang="ar">الأمثلة الموسومة بـ«توضيحي» تستخدم أرقامًا مصطنعة؛ الحالات الواقعية تذكر مصادرها.</span>
+        <span lang="en">Examples marked "illustrative" use made-up numbers; real cases name their sources.</span>
+      </div>
+    </div>
+  </footer>
+  <button class="to-top" type="button" data-i18n-attrs="aria-label" data-aria-label-ar="العودة إلى الأعلى" data-aria-label-en="Back to top" aria-label="العودة إلى الأعلى">
+    <svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23"/></svg>
+    <svg class="ic" aria-hidden="true"><use href="#i-up"></use></svg>
+  </button>
+  <!-- @footer:end -->
+</body>
+</html>

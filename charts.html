@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>Misleading charts · DataLens</title>
+  <meta name="description" content="Part 1 of DataLens: bend charts yourself with a truncated axis, a cherry-picked range and a 3D pie, then spot the trick in six misleading charts.">
+  <!-- @head:start -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e4fd6">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/datalens.css">
+  <script>
+    (function () {
+      var d = document.documentElement, s = {};
+      try { s = JSON.parse(localStorage.getItem("datalens:v1")) || {}; } catch (e) {}
+      var q = /[?&]lang=(ar|en)/.exec(location.search);
+      var l = q ? q[1] : s.lang || "ar";
+      d.lang = l;
+      d.dir = l === "ar" ? "rtl" : "ltr";
+      if (s.theme === "dark" || s.theme === "light") d.setAttribute("data-theme", s.theme);
+      d.classList.add("js");
+    })();
+  </script>
+  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/chart.js" defer></script>
+  <!-- @head:end -->
+  <script src="assets/js/part1.js" defer></script>
+</head>
+<body data-page="charts" data-title-ar="الرسوم المضلِّلة · عدسة البيانات" data-title-en="Misleading charts · DataLens">
+  <!-- @nav:start -->
+  <a class="skip-link" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+  <div class="read-progress" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+        <span class="brand__name">
+          <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+          <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+        </span>
+      </a>
+      <nav aria-label="Main" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة الرئيسية" data-aria-label-en="Main">
+        <ul class="nav__links" id="nav-links">
+          <li><a class="nav__link" data-nav="home" href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a></li>
+          <li><a class="nav__link" data-nav="charts" href="charts.html"><span class="nav__num">01</span><span lang="ar">الرسوم المضلِّلة</span><span lang="en">Charts</span></a></li>
+          <li><a class="nav__link" data-nav="traps" href="traps.html"><span class="nav__num">02</span><span lang="ar">الفخاخ الإحصائية</span><span lang="en">Traps</span></a></li>
+          <li><a class="nav__link" data-nav="ai" href="ai.html"><span class="nav__num">03</span><span lang="ar">الذكاء الاصطناعي</span><span lang="en">AI check</span></a></li>
+          <li><a class="nav__link" data-nav="cases" href="cases.html"><span class="nav__num">04</span><span lang="ar">حالات واقعية</span><span lang="en">Real cases</span></a></li>
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <button class="tool-btn" type="button" data-lang-toggle>
+          <svg class="ic" aria-hidden="true"><use href="#i-globe"></use></svg><span class="lang-label">EN</span>
+        </button>
+        <button class="tool-btn theme-btn" type="button" data-theme-toggle data-i18n-attrs="aria-label" data-aria-label-ar="الوضع الداكن" data-aria-label-en="Dark mode" aria-label="الوضع الداكن">
+          <svg class="ic ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="ic ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+        <a class="nav__cta" href="quiz.html" data-nav="quiz">
+          <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+          <span><span lang="ar">التحدي</span><span lang="en">Challenge</span></span>
+        </a>
+        <button class="tool-btn nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة" data-aria-label-en="Menu" aria-label="القائمة">
+          <svg class="ic" aria-hidden="true"><use href="#i-menu"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- @nav:end -->
+
+  <main id="main">
+    <!-- =============================== HERO =============================== -->
+    <section class="page-hero">
+      <div class="container page-hero__grid">
+        <div>
+          <nav class="crumbs enter" aria-label="Breadcrumb">
+            <a href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a>
+            <svg class="ic flip-rtl" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            <span><span lang="ar">الجزء الأول</span><span lang="en">Part 1</span></span>
+          </nav>
+          <div class="part-tag enter" style="--d:60ms">
+            <span class="part-tag__num"><span lang="ar">الجزء 1 من 4</span><span lang="en">Part 1 of 4</span></span>
+            <span class="part-dots" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i></span>
+          </div>
+          <h1 class="enter" style="--d:120ms">
+            <span lang="ar">رسوم بيانية <span class="hl hl-anim">مضلِّلة</span></span>
+            <span lang="en">Misleading <span class="hl hl-anim">charts</span></span>
+          </h1>
+          <p class="page-hero__lede enter" style="--d:180ms">
+            <span lang="ar">قد يستخدم الرسم أرقامًا صحيحة ويروي مع ذلك قصة خاطئة. هنا ستلوي الرسوم بيدك: تقطع المحور، وتنتقي التواريخ، وتُميل الفطيرة. ثم تبحث عن الخدعة في ستة رسوم.</span>
+            <span lang="en">A chart can use true numbers and still tell a false story. Here you will bend charts yourself: cut the axis, pick the dates, tilt the pie. Then you will hunt for the trick in six charts.</span>
+          </p>
+        </div>
+        <div class="page-hero__visual enter" style="--d:200ms" aria-hidden="true">
+          <div class="orbit">
+            <div class="orbit__core">
+              <svg viewBox="0 0 24 24" class="ic" style="width:56%;height:56%;color:var(--lens)"><use href="#i-bars"></use></svg>
+            </div>
+            <span class="note-chip note-chip--1"><svg class="ic"><use href="#i-alert"></use></svg><span lang="ar">يبدأ من 50</span><span lang="en">starts at 50</span></span>
+            <span class="note-chip note-chip--2" style="--d:1s"><svg class="ic"><use href="#i-calendar"></use></svg><span lang="ar">4 أشهر فقط</span><span lang="en">only 4 months</span></span>
+            <span class="note-chip note-chip--3" style="--d:2s"><svg class="ic"><use href="#i-pie"></use></svg><span lang="ar">فطيرة مائلة</span><span lang="en">tilted pie</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="subnav" aria-label="Sections" data-i18n-attrs="aria-label" data-aria-label-ar="أقسام الصفحة" data-aria-label-en="Sections">
+      <div class="container">
+        <ul class="subnav__list">
+          <li><a href="#truncated"><span class="mono">01</span><span lang="ar">المحور المقطوع</span><span lang="en">Truncated axis</span></a></li>
+          <li><a href="#cherry"><span class="mono">02</span><span lang="ar">الفترة المنتقاة</span><span lang="en">Cherry-picking</span></a></li>
+          <li><a href="#pie3d"><span class="mono">03</span><span lang="ar">الفطيرة ثلاثية الأبعاد</span><span lang="en">3D pie</span></a></li>
+          <li><a href="#spot"><span class="mono">04</span><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></a></li>
+          <li><a href="#guide"><span class="mono">05</span><span lang="ar">الدليل الميداني</span><span lang="en">Field guide</span></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- =============================== TRUNCATED AXIS =============================== -->
+    <section class="section" id="truncated">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">الخدعة 1</span><span lang="en">Trick 1</span></span>
+            <h2><span lang="ar">المحور المقطوع</span><span lang="en">The truncated axis</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">نقارن الأعمدة بأطوالها. إن لم يبدأ المحور من الصفر، لم تعد الأطوال تطابق الأرقام. اسحب المؤشر لتقطع المحور، وشاهد فرقًا من 3 نقاط يتحوّل إلى هوّة.</span>
+            <span lang="en">We compare bars by their length. If the axis doesn't start at zero, the lengths stop matching the numbers. Drag the slider to cut the axis and watch a 3-point gap become a chasm.</span>
+          </p>
+        </div>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon"><svg class="ic" aria-hidden="true"><use href="#i-bars"></use></svg></span>
+              <span><span lang="ar">رضا العملاء: العلامة (أ) مقابل (ب)</span><span lang="en">Customer satisfaction: brand A vs brand B</span></span>
+            </div>
+            <span class="badge badge--warn"><span lang="ar">بيانات توضيحية</span><span lang="en">Illustrative data</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage"><div id="truncChart"></div></div>
+            <div class="lab__side">
+              <div class="control">
+                <label class="control__label" for="truncMin">
+                  <span><span lang="ar">المحور يبدأ من</span><span lang="en">Y-axis starts at</span></span>
+                  <output id="truncMinOut" for="truncMin">0%</output>
+                </label>
+                <input class="range" type="range" id="truncMin" min="0" max="85" step="1" value="0">
+                <div class="range-scale"><span>0%</span><span>85%</span></div>
+              </div>
+              <div class="seg" id="truncPresets" role="group" aria-label="Presets">
+                <button type="button" data-value="0" aria-pressed="true"><span lang="ar">صادق</span><span lang="en">Honest</span></button>
+                <button type="button" data-value="60" aria-pressed="false"><span lang="ar">خفيف</span><span lang="en">Subtle</span></button>
+                <button type="button" data-value="84" aria-pressed="false"><span lang="ar">درامي</span><span lang="en">Dramatic</span></button>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="truncPen">
+                <span class="switch__track"></span>
+                <span><span lang="ar">ضع دائرة حول الخدعة</span><span lang="en">Circle the trick</span></span>
+              </label>
+              <div class="readouts">
+                <div class="readout"><span><span lang="ar">الفرق الحقيقي</span><span lang="en">Real gap</span></span><strong id="truncReal">+3.5%</strong></div>
+                <div class="readout" id="truncVisualBox"><span><span lang="ar">الفرق كما يبدو</span><span lang="en">Gap as drawn</span></span><strong id="truncVisual">+3.5%</strong></div>
+                <div class="readout readout--wide" id="truncLieBox">
+                  <span><span lang="ar">عامل الكذب (حسب إدوارد تَفتي)</span><span lang="en">Lie factor (Edward Tufte)</span></span>
+                  <strong id="truncLie">1.0</strong>
+                  <div class="meter" style="margin-top:8px">
+                    <div class="meter__track"><span class="meter__pin" id="truncPin"></span></div>
+                    <div class="meter__scale"><span>1</span><span>3</span><span>10</span><span>30</span><span>100</span></div>
+                  </div>
+                </div>
+              </div>
+              <div class="verdict" id="truncVerdict" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:20px" data-stagger="100">
+          <div class="callout reveal">
+            <svg class="ic" aria-hidden="true"><use href="#i-info"></use></svg>
+            <div>
+              <h4><span lang="ar">ما «عامل الكذب»؟</span><span lang="en">What is the lie factor?</span></h4>
+              <p><span lang="ar">اقترحه خبير التصوير البياني إدوارد تَفتي: حجم الفرق المرسوم مقسومًا على حجم الفرق في البيانات. القيمة 1 تعني رسمًا صادقًا؛ وما فوق 1.05 تقريبًا يبدأ بالتضخيم.</span><span lang="en">Proposed by data-graphics expert Edward Tufte: the size of the effect shown in the graphic divided by the size of the effect in the data. A value of 1 is honest; much above 1.05 starts to exaggerate.</span></p>
+            </div>
+          </div>
+          <div class="callout reveal">
+            <svg class="ic" aria-hidden="true"><use href="#i-line"></use></svg>
+            <div>
+              <h4><span lang="ar">متى يُقبل محور لا يبدأ من الصفر؟</span><span lang="en">When is a non-zero axis fine?</span></h4>
+              <p><span lang="ar">الأعمدة يجب أن تبدأ من الصفر لأن طولها هو الرسالة. أما الرسم الخطي لدرجات الحرارة أو أسعار الأسهم فيعرض التغيّر، وقد لا يحتاج إلى الصفر، بشرط أن تكون أرقام المحور واضحة.</span><span lang="en">Bars must start at zero because their length is the message. A line chart of temperatures or share prices shows change and may not need zero, as long as the axis numbers are clearly labelled.</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== CHERRY PICKING =============================== -->
+    <section class="section section--soft" id="cherry">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">الخدعة 2</span><span lang="en">Trick 2</span></span>
+            <h2><span lang="ar">الفترة الزمنية المنتقاة</span><span lang="en">The cherry-picked range</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">اختر بداية الرسم ونهايته، وستكتب العنوان الذي تريده. اسحب النافذة المظلّلة على الرسم الصغير، أو جرّب الخيارات الجاهزة، وراقب العنوان يتغيّر.</span>
+            <span lang="en">Choose where a chart starts and ends, and you can write any headline you like. Drag the shaded window on the mini chart, or try the presets, and watch the headline change.</span>
+          </p>
+        </div>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon card__icon--teal"><svg class="ic" aria-hidden="true"><use href="#i-line"></use></svg></span>
+              <span><span lang="ar">سعر سهم «نوفاتك»، 2016–2025</span><span lang="en">NovaTech share price, 2016–2025</span></span>
+            </div>
+            <span class="badge badge--warn"><span lang="ar">شركة خيالية</span><span lang="en">Fictional company</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage">
+              <p id="cherryHeadline" class="mono" style="margin:0 0 6px;font-family:var(--f-display);font-weight:800;font-size:clamp(1.1rem,2.4vw,1.55rem);line-height:1.35" aria-live="polite"></p>
+              <div id="cherryChart"></div>
+              <div id="cherryOverview" style="margin-top:8px" tabindex="0" role="slider"
+                   aria-valuemin="0" aria-valuemax="119"
+                   data-i18n-attrs="aria-label"
+                   data-aria-label-ar="نافذة الفترة الزمنية. الأسهم تحرّكها، ومع Shift تغيّر عرضها."
+                   data-aria-label-en="Time window. Arrow keys move it; with Shift they resize it."></div>
+              <p class="lab__note" style="margin-top:6px;display:flex;gap:8px;align-items:center">
+                <svg class="ic" aria-hidden="true"><use href="#i-hand"></use></svg>
+                <span lang="ar">اسحب النافذة أو حوافها. على لوحة المفاتيح: الأسهم، ومع Shift لتغيير العرض.</span>
+                <span lang="en">Drag the window or its edges. Keyboard: arrow keys, plus Shift to resize.</span>
+              </p>
+            </div>
+            <div class="lab__side">
+              <div class="control">
+                <span class="control__label"><span><span lang="ar">خيارات جاهزة</span><span lang="en">Presets</span></span></span>
+                <div class="seg" id="cherryPresets" role="group">
+                  <button type="button" data-value="last" aria-pressed="false"><span lang="ar">آخر 4 أشهر</span><span lang="en">Last 4 months</span></button>
+                  <button type="button" data-value="crash" aria-pressed="false"><span lang="ar">الانهيار</span><span lang="en">The crash</span></button>
+                  <button type="button" data-value="rebound" aria-pressed="false"><span lang="ar">التعافي</span><span lang="en">The rebound</span></button>
+                  <button type="button" data-value="all" aria-pressed="true"><span lang="ar">كل السنوات</span><span lang="en">All 10 years</span></button>
+                </div>
+              </div>
+              <div class="readouts">
+                <div class="readout readout--wide"><span><span lang="ar">النافذة المختارة</span><span lang="en">Selected window</span></span><strong id="cherryRange" style="font-size:1.05rem">—</strong></div>
+                <div class="readout" id="cherryWinBox"><span><span lang="ar">التغيّر في النافذة</span><span lang="en">Change in window</span></span><strong id="cherryWin">—</strong></div>
+                <div class="readout is-good"><span><span lang="ar">التغيّر في 10 سنوات</span><span lang="en">Change over 10 years</span></span><strong id="cherryAll">—</strong></div>
+              </div>
+              <div class="verdict" id="cherryVerdict" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== 3D PIE =============================== -->
+    <section class="section" id="pie3d">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">الخدعة 3</span><span lang="en">Trick 3</span></span>
+            <h2><span lang="ar">الفطيرة ثلاثية الأبعاد</span><span lang="en">The 3D pie chart</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">الإمالة والعمق يجعلان الشريحة الأقرب إليك تبدو أكبر، لأنها تكسب جدارًا جانبيًا ومنظورًا. هنا نحسب كم «حبرًا» تأخذ كل شريحة على الشاشة.</span>
+            <span lang="en">Tilt and depth make the slice nearest to you look bigger: it gains a side wall and perspective. Here we measure how much ink each slice actually takes up on screen.</span>
+          </p>
+        </div>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon card__icon--warn"><svg class="ic" aria-hidden="true"><use href="#i-pie"></use></svg></span>
+              <span><span lang="ar">استطلاع: تطبيق الدراسة المفضّل</span><span lang="en">Survey: favourite study app</span></span>
+            </div>
+            <span class="badge badge--warn"><span lang="ar">بيانات توضيحية</span><span lang="en">Illustrative data</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage"><div id="pieChart"></div></div>
+            <div class="lab__side">
+              <div class="seg" id="pieMode" role="group">
+                <button type="button" data-value="3d" aria-pressed="true"><span lang="ar">فطيرة ثلاثية</span><span lang="en">3D pie</span></button>
+                <button type="button" data-value="flat" aria-pressed="false"><span lang="ar">فطيرة مسطّحة</span><span lang="en">Flat pie</span></button>
+                <button type="button" data-value="bars" aria-pressed="false"><span lang="ar">أعمدة</span><span lang="en">Bars</span></button>
+              </div>
+              <div class="control" id="pieTiltCtl">
+                <label class="control__label" for="pieTilt"><span><span lang="ar">الإمالة</span><span lang="en">Tilt</span></span><output id="pieTiltOut" for="pieTilt"></output></label>
+                <input class="range" type="range" id="pieTilt" min="0" max="70" step="1" value="58">
+              </div>
+              <div class="control" id="pieRotCtl">
+                <label class="control__label" for="pieRot"><span><span lang="ar">الدوران</span><span lang="en">Rotation</span></span><output id="pieRotOut" for="pieRot"></output></label>
+                <input class="range" type="range" id="pieRot" min="0" max="359" step="1" value="221">
+              </div>
+              <div class="table-wrap" style="border-radius:var(--r-sm)">
+                <table class="guide-table" style="min-width:0;font-size:.9rem">
+                  <thead><tr>
+                    <th><span lang="ar">الخيار</span><span lang="en">Option</span></th>
+                    <th><span lang="ar">الحصة الحقيقية</span><span lang="en">True share</span></th>
+                    <th><span lang="ar">الحصة كما تبدو</span><span lang="en">Share of ink</span></th>
+                  </tr></thead>
+                  <tbody id="pieTable"></tbody>
+                </table>
+              </div>
+              <div class="verdict" id="pieVerdict" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== SPOT THE TRICK =============================== -->
+    <section class="section section--soft" id="spot">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">تدرّب</span><span lang="en">Practice</span></span>
+            <h2><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">ستة رسوم، في كل منها خدعة واحدة. اضغط على الجزء الذي يضلّلك: العنوان، أو أحد المحورين، أو الأشكال نفسها. سنضع دائرة حمراء حين تجدها.</span>
+            <span lang="en">Six charts, one trick each. Click the part that misleads you: the title, an axis or the shapes themselves. We will circle it in red when you find it.</span>
+          </p>
+        </div>
+
+        <div class="spot-lab reveal">
+          <ul class="spot-list" id="spotList" role="tablist" aria-label="Charts"></ul>
+          <div class="spot-main">
+            <div class="spot-main__head">
+              <strong id="spotTitle"></strong>
+              <p><span lang="ar">اضغط على الجزء المضلِّل في الرسم.</span><span lang="en">Click the misleading part of the chart.</span></p>
+            </div>
+            <div class="spot-stage spotting" id="spotStage" role="tabpanel"></div>
+            <div class="spot-foot">
+              <div id="spotFeedback" aria-live="polite"></div>
+              <div class="spot-foot__actions">
+                <button class="btn btn--sm btn--ghost" type="button" id="spotReveal"><svg class="ic" aria-hidden="true"><use href="#i-eye"></use></svg><span lang="ar">أرني الخدعة</span><span lang="en">Show me</span></button>
+                <button class="btn btn--sm btn--soft" type="button" id="spotHonest" hidden><svg class="ic" aria-hidden="true"><use href="#i-shield"></use></svg><span id="spotHonestLabel"></span></button>
+                <button class="btn btn--sm btn--primary" type="button" id="spotNext"><span lang="ar">الرسم التالي</span><span lang="en">Next chart</span><svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg></button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== FIELD GUIDE =============================== -->
+    <section class="section" id="guide">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">احتفظ به</span><span lang="en">Keep it handy</span></span>
+            <h2><span lang="ar">الدليل الميداني للرسوم المضلِّلة</span><span lang="en">Field guide to misleading charts</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">عشر خدع شائعة، وكيف تبدو، والسؤال الذي يكشفها. مرّر على الجدول أفقيًا على الشاشات الصغيرة.</span>
+            <span lang="en">Ten common tricks, what they look like and the question that exposes each one. Scroll the table sideways on small screens.</span>
+          </p>
+        </div>
+        <div class="table-wrap reveal">
+          <table class="guide-table">
+            <thead>
+              <tr>
+                <th><span lang="ar">الخدعة</span><span lang="en">Trick</span></th>
+                <th><span lang="ar">كيف تبدو</span><span lang="en">What it looks like</span></th>
+                <th><span lang="ar">اسأل نفسك</span><span lang="en">Ask yourself</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><span lang="ar">المحور المقطوع</span><span lang="en">Truncated axis</span></td><td><span lang="ar">أعمدة تبدأ فوق الصفر، فيبدو الفرق الصغير ضخمًا</span><span lang="en">Bars start above zero, so a small gap looks huge</span></td><td><span lang="ar">من أين يبدأ المحور؟</span><span lang="en">Where does the axis start?</span></td></tr>
+              <tr><td><span lang="ar">الفترة المنتقاة</span><span lang="en">Cherry-picked range</span></td><td><span lang="ar">تواريخ مختارة لتُظهر الهبوط وحده أو الصعود وحده</span><span lang="en">Dates chosen to show only the dip or only the climb</span></td><td><span lang="ar">ماذا حدث قبلها وبعدها؟</span><span lang="en">What happened before and after?</span></td></tr>
+              <tr><td><span lang="ar">التأثيرات ثلاثية الأبعاد</span><span lang="en">3D effects</span></td><td><span lang="ar">فطائر وأعمدة مائلة؛ الجزء الأمامي يبدو أكبر</span><span lang="en">Tilted pies and bars; the front looks bigger</span></td><td><span lang="ar">هل يروي رسم مسطّح القصة نفسها؟</span><span lang="en">Would a flat chart tell the same story?</span></td></tr>
+              <tr><td><span lang="ar">المحور المقلوب</span><span lang="en">Inverted axis</span></td><td><span lang="ar">القيم الكبيرة مرسومة في الأسفل</span><span lang="en">Larger values are drawn lower</span></td><td><span lang="ar">في أي اتجاه تكبر الأرقام؟</span><span lang="en">Which way do the numbers grow?</span></td></tr>
+              <tr><td><span lang="ar">المحوران المزدوجان</span><span lang="en">Dual axes</span></td><td><span lang="ar">مقياسان يُختاران ليتقاطع الخطان أو يتحركا معًا</span><span lang="en">Two scales chosen so the lines cross or move together</span></td><td><span lang="ar">هل يلتقي الخطان على مقياس واحد؟</span><span lang="en">Would the lines meet on one shared scale?</span></td></tr>
+              <tr><td><span lang="ar">الفواصل غير المتساوية</span><span lang="en">Uneven intervals</span></td><td><span lang="ar">مسافات متساوية لفترات زمنية غير متساوية</span><span lang="en">Equal spacing for unequal gaps in time</span></td><td><span lang="ar">هل التواريخ متباعدة بانتظام؟</span><span lang="en">Are the dates evenly spaced?</span></td></tr>
+              <tr><td><span lang="ar">تكبير الصور والمساحات</span><span lang="en">Area and icon scaling</span></td><td><span lang="ar">أيقونة يتضاعف طولها وعرضها لقيمة تضاعفت مرة واحدة</span><span lang="en">An icon doubles in height and width for a value that doubled once</span></td><td><span lang="ar">هل يكبر الطول أم المساحة؟</span><span lang="en">Is it the length or the area that grows?</span></td></tr>
+              <tr><td><span lang="ar">المجاميع التراكمية</span><span lang="en">Cumulative totals</span></td><td><span lang="ar">مجموع جارٍ لا يمكن أن ينخفض أبدًا</span><span lang="en">A running total that can never go down</span></td><td><span lang="ar">هل هذا مجموع أم قيمة لكل فترة؟</span><span lang="en">Is this a total or a per-period value?</span></td></tr>
+              <tr><td><span lang="ar">المقام الغائب</span><span lang="en">Missing denominator</span></td><td><span lang="ar">أعداد خام تُقارن بين أماكن مختلفة الحجم كثيرًا</span><span lang="en">Raw counts compared across places of very different size</span></td><td><span lang="ar">لكل كم؟ لكل شخص؟ لكل 100 ألف؟</span><span lang="en">Per what? Per person? Per 100,000?</span></td></tr>
+              <tr><td><span lang="ar">فطيرة لا تكتمل</span><span lang="en">A pie that doesn't add up</span></td><td><span lang="ar">حصص مجموعها أكثر من 100%</span><span lang="en">Shares that sum to more than 100%</span></td><td><span lang="ar">هل تشكّل الأجزاء كلًّا واحدًا؟</span><span lang="en">Do the parts make one whole?</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== NEXT =============================== -->
+    <section class="next-band">
+      <div class="container next-band__inner">
+        <div class="reveal">
+          <h2><span lang="ar">أحسنت. الرسوم لن تخدعك بسهولة بعد اليوم.</span><span lang="en">Nice work. Charts won't fool you so easily now.</span></h2>
+          <p>
+            <span lang="ar">الجزء الثاني يتجاوز الرسم إلى الأرقام نفسها: الارتباط والسببية، والعيّنات المتحيّزة، والمفارقات التي تقلب النتائج.</span>
+            <span lang="en">Part 2 goes past the drawing to the numbers themselves: correlation and causation, biased samples and paradoxes that flip results.</span>
+          </p>
+        </div>
+        <div class="next-band__actions reveal">
+          <a class="btn btn--primary" href="traps.html"><span lang="ar">الجزء الثاني: الفخاخ الإحصائية</span><span lang="en">Part 2: Statistical traps</span><svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <button class="btn btn--ghost" type="button" data-complete></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @footer:start -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html">
+            <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+            <span class="brand__name">
+              <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+              <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+            </span>
+          </a>
+          <p lang="ar">منصة تفاعلية تعلّم غير المتخصصين كيف يكتشفون الأرقام المضلِّلة في الأخبار والإعلانات ووسائل التواصل وإجابات الذكاء الاصطناعي.</p>
+          <p lang="en">An interactive platform that teaches non-specialists to spot misleading numbers in the news, ads, social media and AI answers.</p>
+        </div>
+        <div>
+          <h4><span lang="ar">تعلّم</span><span lang="en">Learn</span></h4>
+          <ul>
+            <li><a href="charts.html"><span lang="ar">01 · الرسوم المضلِّلة</span><span lang="en">01 · Misleading charts</span></a></li>
+            <li><a href="traps.html"><span lang="ar">02 · الفخاخ الإحصائية</span><span lang="en">02 · Statistical traps</span></a></li>
+            <li><a href="ai.html"><span lang="ar">03 · الذكاء الاصطناعي مدقِّقًا</span><span lang="en">03 · AI as a fact-checker</span></a></li>
+            <li><a href="cases.html"><span lang="ar">04 · حالات واقعية</span><span lang="en">04 · Real cases</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4><span lang="ar">تدرّب</span><span lang="en">Practice</span></h4>
+          <ul>
+            <li><a href="quiz.html"><span lang="ar">هل هذا الرسم صادق؟</span><span lang="en">Is this chart honest?</span></a></li>
+            <li><a href="charts.html#spot"><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></a></li>
+            <li><a href="ai.html#builder"><span lang="ar">مُنشئ أسئلة التحقق</span><span lang="en">Fact-check prompt builder</span></a></li>
+            <li><a href="cases.html#xray"><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© <span data-year>2026</span> <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span></span>
+        <span lang="ar">الأمثلة الموسومة بـ«توضيحي» تستخدم أرقامًا مصطنعة؛ الحالات الواقعية تذكر مصادرها.</span>
+        <span lang="en">Examples marked "illustrative" use made-up numbers; real cases name their sources.</span>
+      </div>
+    </div>
+  </footer>
+  <button class="to-top" type="button" data-i18n-attrs="aria-label" data-aria-label-ar="العودة إلى الأعلى" data-aria-label-en="Back to top" aria-label="العودة إلى الأعلى">
+    <svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23"/></svg>
+    <svg class="ic" aria-hidden="true"><use href="#i-up"></use></svg>
+  </button>
+  <!-- @footer:end -->
+</body>
+</html>

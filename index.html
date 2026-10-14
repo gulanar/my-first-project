@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>DataLens</title>
+  <meta name="description" content="DataLens (عدسة البيانات) teaches you to spot misleading charts, statistical traps and viral claims, and to use AI to question a statistic.">
+  <!-- @head:start -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e4fd6">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/datalens.css">
+  <script>
+    (function () {
+      var d = document.documentElement, s = {};
+      try { s = JSON.parse(localStorage.getItem("datalens:v1")) || {}; } catch (e) {}
+      var q = /[?&]lang=(ar|en)/.exec(location.search);
+      var l = q ? q[1] : s.lang || "ar";
+      d.lang = l;
+      d.dir = l === "ar" ? "rtl" : "ltr";
+      if (s.theme === "dark" || s.theme === "light") d.setAttribute("data-theme", s.theme);
+      d.classList.add("js");
+    })();
+  </script>
+  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/chart.js" defer></script>
+  <!-- @head:end -->
+  <script src="assets/js/home.js" defer></script>
+</head>
+<body data-page="home" data-title-ar="عدسة البيانات" data-title-en="DataLens">
+  <!-- @nav:start -->
+  <a class="skip-link" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+  <div class="read-progress" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+        <span class="brand__name">
+          <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+          <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+        </span>
+      </a>
+      <nav aria-label="Main" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة الرئيسية" data-aria-label-en="Main">
+        <ul class="nav__links" id="nav-links">
+          <li><a class="nav__link" data-nav="home" href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a></li>
+          <li><a class="nav__link" data-nav="charts" href="charts.html"><span class="nav__num">01</span><span lang="ar">الرسوم المضلِّلة</span><span lang="en">Charts</span></a></li>
+          <li><a class="nav__link" data-nav="traps" href="traps.html"><span class="nav__num">02</span><span lang="ar">الفخاخ الإحصائية</span><span lang="en">Traps</span></a></li>
+          <li><a class="nav__link" data-nav="ai" href="ai.html"><span class="nav__num">03</span><span lang="ar">الذكاء الاصطناعي</span><span lang="en">AI check</span></a></li>
+          <li><a class="nav__link" data-nav="cases" href="cases.html"><span class="nav__num">04</span><span lang="ar">حالات واقعية</span><span lang="en">Real cases</span></a></li>
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <button class="tool-btn" type="button" data-lang-toggle>
+          <svg class="ic" aria-hidden="true"><use href="#i-globe"></use></svg><span class="lang-label">EN</span>
+        </button>
+        <button class="tool-btn theme-btn" type="button" data-theme-toggle data-i18n-attrs="aria-label" data-aria-label-ar="الوضع الداكن" data-aria-label-en="Dark mode" aria-label="الوضع الداكن">
+          <svg class="ic ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="ic ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+        <a class="nav__cta" href="quiz.html" data-nav="quiz">
+          <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+          <span><span lang="ar">التحدي</span><span lang="en">Challenge</span></span>
+        </a>
+        <button class="tool-btn nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة" data-aria-label-en="Menu" aria-label="القائمة">
+          <svg class="ic" aria-hidden="true"><use href="#i-menu"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- @nav:end -->
+
+  <main id="main">
+    <!-- =============================== HERO =============================== -->
+    <section class="hero">
+      <div class="container hero__grid">
+        <div class="hero__copy">
+          <p class="hero__badge enter">
+            <b><span lang="ar">4 أجزاء</span><span lang="en">4 parts</span></b>
+            <span lang="ar">تعلّم كيف تكشف الأرقام المضلِّلة</span>
+            <span lang="en">Learn to catch numbers that mislead</span>
+          </p>
+
+          <h1 class="hero__title enter" style="--d:80ms">
+            <span lang="ar">حين تكذب الأرقام،<br><span class="hl hl-anim">انظر أقرب.</span></span>
+            <span lang="en">When numbers lie,<br><span class="hl hl-anim">look closer.</span></span>
+          </h1>
+
+          <p class="hero__lede enter" style="--d:160ms">
+            <span lang="ar">عدسة البيانات منصة تعليمية تفاعلية تعلّمك اكتشاف الرسوم البيانية المضلِّلة والفخاخ الإحصائية والادعاءات المنتشرة في الأخبار والإعلانات ووسائل التواصل، وحتى في إجابات الذكاء الاصطناعي. لا تحتاج إلى خلفية في الرياضيات.</span>
+            <span lang="en">DataLens is a hands-on guide to catching misleading charts, statistical traps and viral claims in the news, in ads, on social media and even in AI answers. No math background needed.</span>
+          </p>
+
+          <div class="suspect enter" style="--d:220ms">
+            <span class="suspect__label"><span lang="ar">المشتبه به اليوم:</span><span lang="en">Today's suspect:</span></span>
+            <span class="rotator" data-rotator aria-live="off">
+              <span><span lang="ar">محور مقطوع</span><span lang="en">a truncated axis</span></span>
+              <span><span lang="ar">فترة زمنية منتقاة</span><span lang="en">a cherry-picked range</span></span>
+              <span><span lang="ar">فطيرة ثلاثية الأبعاد</span><span lang="en">a 3D pie chart</span></span>
+              <span><span lang="ar">عيّنة من 12 شخصًا</span><span lang="en">a sample of 12 people</span></span>
+              <span><span lang="ar">كلمة «مرتبط» في عنوان</span><span lang="en">"linked to" in a headline</span></span>
+              <span><span lang="ar">رقم اخترعه الذكاء الاصطناعي</span><span lang="en">a number an AI made up</span></span>
+            </span>
+          </div>
+
+          <div class="hero__actions enter" style="--d:280ms">
+            <a class="btn btn--primary" href="charts.html">
+              <span lang="ar">ابدأ الرحلة</span><span lang="en">Start the journey</span>
+              <svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg>
+            </a>
+            <a class="btn btn--ghost" href="quiz.html">
+              <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+              <span lang="ar">هل هذا الرسم صادق؟</span><span lang="en">Is this chart honest?</span>
+            </a>
+          </div>
+
+          <ul class="hero__meta enter" style="--d:340ms">
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span lang="ar">تمارين تفاعلية في كل جزء</span><span lang="en">Hands-on demos in every part</span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span lang="ar">بالعربية والإنجليزية</span><span lang="en">Arabic &amp; English</span></li>
+            <li><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span lang="ar">مجانية وبلا تسجيل</span><span lang="en">Free, no sign-up</span></li>
+          </ul>
+        </div>
+
+        <div class="lens-demo enter" style="--d:200ms">
+          <span class="note-chip note-chip--1" style="--d:0s"><svg class="ic" aria-hidden="true"><use href="#i-alert"></use></svg><span lang="ar">المحور يبدأ من 50؟</span><span lang="en">Axis starts at 50?</span></span>
+          <span class="note-chip note-chip--2" style="--d:1.2s"><svg class="ic" aria-hidden="true"><use href="#i-help"></use></svg><span lang="ar">ما المصدر؟</span><span lang="en">Source?</span></span>
+          <span class="note-chip note-chip--3 mono" style="--d:2.1s"><svg class="ic" aria-hidden="true"><use href="#i-users"></use></svg>n = 12</span>
+          <span class="note-chip note-chip--4" style="--d:.6s"><svg class="ic" aria-hidden="true"><use href="#i-check"></use></svg><span lang="ar">المقياس الحقيقي</span><span lang="en">True scale</span></span>
+
+          <figure class="lens-card" style="margin:0">
+            <div class="lens-card__bar">
+              <span class="lens-card__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="mono">sales_report_FINAL_v3.png</span>
+            </div>
+            <div class="lens-stage" id="lensStage" tabindex="0" role="img"
+                 data-i18n-attrs="aria-label"
+                 data-aria-label-ar="رسم مبيعات مضلِّل بمحور يبدأ من 50، والعدسة تكشف النسخة الصادقة التي يبدأ محورها من الصفر. استخدم الأسهم لتحريك العدسة."
+                 data-aria-label-en="A misleading sales chart whose axis starts at 50; the lens reveals the honest version starting at zero. Use the arrow keys to move the lens.">
+              <div class="lens-layer" id="lensLie"></div>
+              <div class="lens-layer lens-layer--truth" id="lensTruth"></div>
+              <div class="lens-ring" aria-hidden="true"><span class="lens-ring__tag"><span lang="ar">المقياس الحقيقي</span><span lang="en">TRUE SCALE</span></span></div>
+            </div>
+            <figcaption class="lens-hint">
+              <svg class="ic" aria-hidden="true"><use href="#i-lens"></use></svg>
+              <span lang="ar">حرّك العدسة فوق الرسم لترى المقياس الحقيقي</span>
+              <span lang="en">Move the lens over the chart to see the true scale</span>
+            </figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== TICKER =============================== -->
+    <div class="ticker" data-ticker aria-label="Headlines under the lens" data-i18n-attrs="aria-label" data-aria-label-ar="عناوين تحت العدسة" data-aria-label-en="Headlines under the lens">
+      <div class="ticker__track">
+        <span class="ticker__item"><q><span lang="ar">الجريمة تتضاعف في مدينتنا!</span><span lang="en">Crime DOUBLES in our town!</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">من حالتين إلى 4</span><span lang="en">from 2 cases to 4</span></span></span>
+        <span class="ticker__item"><q><span lang="ar">9 من كل 10 أطباء يوصون…</span><span lang="en">9 out of 10 dentists recommend…</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">من اختار العشرة؟</span><span lang="en">who picked the 10?</span></span></span>
+        <span class="ticker__item"><q><span lang="ar">القهوة مرتبطة بطول العمر</span><span lang="en">Coffee linked to longer life</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">الارتباط ليس سببًا</span><span lang="en">linked is not caused</span></span></span>
+        <span class="ticker__item"><q><span lang="ar">خصومات تصل إلى 70%!</span><span lang="en">Up to 70% off!</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">على منتج واحد</span><span lang="en">on one item</span></span></span>
+        <span class="ticker__item"><q><span lang="ar">الخطر يقفز 50%!</span><span lang="en">Risk jumps 50%!</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">من 2 إلى 3 في كل ألف</span><span lang="en">from 2 in 1,000 to 3</span></span></span>
+        <span class="ticker__item"><q><span lang="ar">دراسة: الشوكولاتة تُنحِف</span><span lang="en">Study: chocolate helps you slim</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">15 مشاركًا فقط</span><span lang="en">15 participants</span></span></span>
+        <span class="ticker__item"><q><span lang="ar">أسرع تطبيق نموًا في العالم</span><span lang="en">The world's fastest-growing app</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">من 10 مستخدمين إلى 100</span><span lang="en">from 10 users to 100</span></span></span>
+        <span class="ticker__item"><q><span lang="ar">الذكاء الاصطناعي: 73.4% من الناس…</span><span lang="en">AI says 73.4% of people…</span></q><svg class="ic" aria-hidden="true"><use href="#i-pen"></use></svg><span><span lang="ar">اطلب المصدر</span><span lang="en">ask for the source</span></span></span>
+      </div>
+    </div>
+
+    <!-- =============================== COUNT =============================== -->
+    <section class="section section--tight">
+      <div class="container">
+        <div class="stat-row" data-stagger="90">
+          <div class="stat reveal"><span class="stat__num" data-count="4">4</span><span class="stat__label"><span lang="ar">أجزاء تعليمية</span><span lang="en">learning parts</span></span></div>
+          <div class="stat reveal"><span class="stat__num" data-count="5">5</span><span class="stat__label"><span lang="ar">فخاخ إحصائية تجرّبها بيدك</span><span lang="en">statistical traps to simulate</span></span></div>
+          <div class="stat reveal"><span class="stat__num" data-count="8">8</span><span class="stat__label"><span lang="ar">حالات واقعية مُفكَّكة</span><span lang="en">real cases taken apart</span></span></div>
+          <div class="stat reveal"><span class="stat__num" data-count="22">22</span><span class="stat__label"><span lang="ar">تحديًا في الاختبار</span><span lang="en">challenges in the quiz</span></span></div>
+        </div>
+        <p class="stat-note reveal">
+          <svg class="ic" aria-hidden="true"><use href="#i-shield"></use></svg>
+          <span lang="ar">نطبّق ما نعلّمه: كل رقم هنا يمكنك عدّه بنفسك داخل الموقع.</span>
+          <span lang="en">We practice what we teach: you can count every one of these numbers yourself on this site.</span>
+        </p>
+      </div>
+    </section>
+
+    <!-- =============================== JOURNEY =============================== -->
+    <section class="section section--soft" id="journey">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">مسار التعلّم</span><span lang="en">The learning path</span></span>
+            <h2><span lang="ar">أربع محطات، وتحدٍّ في النهاية</span><span lang="en">Four stops and a final challenge</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">ابدأ من أي جزء. نحفظ تقدّمك على هذا الجهاز لتكمل من حيث توقفت.</span>
+            <span lang="en">Start anywhere. Your progress is saved on this device so you can pick up where you left off.</span>
+          </p>
+        </div>
+
+        <div class="journey-progress reveal">
+          <svg class="ic" aria-hidden="true" style="color:var(--lens)"><use href="#i-target"></use></svg>
+          <span class="journey-progress__label"><span lang="ar">تقدّمك</span><span lang="en">Your progress</span> <span class="mono" id="journeyPct">0%</span></span>
+          <div class="journey-progress__bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="journeyBar"><span></span></div>
+        </div>
+
+        <div class="journey" data-stagger="90">
+          <article class="card spot journey-card reveal">
+            <div class="journey-card__top">
+              <span class="journey-card__num">01</span>
+              <span class="status" data-part="charts"></span>
+            </div>
+            <div class="card__icon"><svg class="ic" aria-hidden="true"><use href="#i-bars"></use></svg></div>
+            <h3><a class="stretched" href="charts.html"><span lang="ar">الرسوم البيانية المضلِّلة</span><span lang="en">Misleading charts</span></a></h3>
+            <p>
+              <span lang="ar">محاور مقطوعة، وفترات منتقاة، وفطائر ثلاثية الأبعاد. حرّك المؤشرات وشاهد رسمًا هادئًا يتحوّل إلى كارثة.</span>
+              <span lang="en">Truncated axes, cherry-picked ranges and 3D pies. Move the sliders and watch a calm chart turn into a catastrophe.</span>
+            </p>
+            <div class="chip-row">
+              <span class="badge"><span lang="ar">المحور المقطوع</span><span lang="en">Truncated axis</span></span>
+              <span class="badge"><span lang="ar">الانتقاء</span><span lang="en">Cherry-picking</span></span>
+              <span class="badge"><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></span>
+            </div>
+            <span class="journey-card__go"><span lang="ar">ادخل الجزء الأول</span><span lang="en">Open part 1</span><svg class="ic flip-rtl" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+          </article>
+
+          <article class="card spot journey-card reveal">
+            <div class="journey-card__top">
+              <span class="journey-card__num">02</span>
+              <span class="status" data-part="traps"></span>
+            </div>
+            <div class="card__icon card__icon--teal"><svg class="ic" aria-hidden="true"><use href="#i-dice"></use></svg></div>
+            <h3><a class="stretched" href="traps.html"><span lang="ar">الفخاخ الإحصائية الشائعة</span><span lang="en">Common statistical traps</span></a></h3>
+            <p>
+              <span lang="ar">الارتباط والسببية، وتحيّز العيّنة، ومفارقة سيمبسون، والعيّنات الصغيرة. لكل فخ محاكاة تشغّلها بنفسك.</span>
+              <span lang="en">Correlation vs causation, sampling bias, Simpson's paradox and tiny samples. Each trap comes with a simulation you run yourself.</span>
+            </p>
+            <div class="chip-row">
+              <span class="badge"><span lang="ar">الارتباط ≠ السببية</span><span lang="en">Correlation ≠ cause</span></span>
+              <span class="badge"><span lang="ar">تحيّز العيّنة</span><span lang="en">Sampling bias</span></span>
+              <span class="badge"><span lang="ar">سيمبسون</span><span lang="en">Simpson</span></span>
+            </div>
+            <span class="journey-card__go"><span lang="ar">ادخل الجزء الثاني</span><span lang="en">Open part 2</span><svg class="ic flip-rtl" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+          </article>
+
+          <article class="card spot journey-card reveal">
+            <div class="journey-card__top">
+              <span class="journey-card__num">03</span>
+              <span class="status" data-part="ai"></span>
+            </div>
+            <div class="card__icon card__icon--warn"><svg class="ic" aria-hidden="true"><use href="#i-bot"></use></svg></div>
+            <h3><a class="stretched" href="ai.html"><span lang="ar">الذكاء الاصطناعي مدقِّقًا</span><span lang="en">AI as a fact-checker</span></a></h3>
+            <p>
+              <span lang="ar">استخدم ChatGPT أو Claude أو Gemini لمساءلة إحصائية، وتعلّم أين يخترع الذكاء الاصطناعي أرقامه هو أيضًا.</span>
+              <span lang="en">Use ChatGPT, Claude or Gemini to question a statistic, and learn where AI invents numbers of its own.</span>
+            </p>
+            <div class="chip-row">
+              <span class="badge"><span lang="ar">مُنشئ الأسئلة</span><span lang="en">Prompt builder</span></span>
+              <span class="badge"><span lang="ar">الهلوسة</span><span lang="en">Hallucinations</span></span>
+            </div>
+            <span class="journey-card__go"><span lang="ar">ادخل الجزء الثالث</span><span lang="en">Open part 3</span><svg class="ic flip-rtl" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+          </article>
+
+          <article class="card spot journey-card reveal">
+            <div class="journey-card__top">
+              <span class="journey-card__num">04</span>
+              <span class="status" data-part="cases"></span>
+            </div>
+            <div class="card__icon card__icon--trick"><svg class="ic" aria-hidden="true"><use href="#i-news"></use></svg></div>
+            <h3><a class="stretched" href="cases.html"><span lang="ar">حالات واقعية</span><span lang="en">Real cases</span></a></h3>
+            <p>
+              <span lang="ar">ادعاءات وعناوين شهيرة نفككها خطوة بخطوة، ونعرض ما تقوله الأدلة فعلًا.</span>
+              <span lang="en">Famous claims and headlines taken apart step by step, with what the evidence actually says.</span>
+            </p>
+            <div class="chip-row">
+              <span class="badge"><span lang="ar">8 حالات</span><span lang="en">8 cases</span></span>
+              <span class="badge"><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></span>
+            </div>
+            <span class="journey-card__go"><span lang="ar">ادخل الجزء الرابع</span><span lang="en">Open part 4</span><svg class="ic flip-rtl" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+          </article>
+
+          <article class="card journey-card journey-card--wide reveal">
+            <div>
+              <span class="status" data-part="quiz" style="margin-bottom:10px"></span>
+              <h3><a class="stretched" href="quiz.html"><span lang="ar">التحدي: هل هذا الرسم صادق؟</span><span lang="en">The challenge: is this chart honest?</span></a></h3>
+              <p>
+                <span lang="ar">12 رسمًا و10 أسئلة ونتيجة واحدة. اسحب أو اضغط أو استخدم لوحة المفاتيح.</span>
+                <span lang="en">12 charts, 10 questions, one score. Swipe, click or use your keyboard.</span>
+              </p>
+            </div>
+            <span class="btn btn--primary" aria-hidden="true">
+              <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+              <span lang="ar">ابدأ التحدي</span><span lang="en">Take the challenge</span>
+            </span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== FIVE QUESTIONS =============================== -->
+    <section class="section" id="five">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">أداة تحملها معك</span><span lang="en">A tool to carry with you</span></span>
+            <h2><span lang="ar">العدسة في خمسة أسئلة</span><span lang="en">The lens in five questions</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">في عام 1954 اقترح دارِل هَف في كتابه «كيف تكذب بالإحصاء» خمسة أسئلة تطرحها على أي رقم تقرؤه. ما زالت تعمل حتى اليوم. اضغط على كل بطاقة.</span>
+            <span lang="en">In 1954, Darrell Huff's book <i>How to Lie with Statistics</i> offered five questions to ask of any number you read. They still work. Tap each card.</span>
+          </p>
+        </div>
+
+        <div class="flip-grid" data-stagger="80">
+          <button class="flip reveal" type="button" aria-pressed="false">
+            <span class="flip__inner">
+              <span class="flip__face flip__face--front">
+                <span class="flip__n">1 / 5</span>
+                <span class="card__icon"><svg class="ic" aria-hidden="true"><use href="#i-megaphone"></use></svg></span>
+                <span class="flip__q"><span lang="ar">من يقول ذلك؟</span><span lang="en">Who says so?</span></span>
+                <span class="flip__hint"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">اقلب البطاقة</span><span lang="en">Flip</span></span>
+              </span>
+              <span class="flip__face flip__face--back">
+                <p><span lang="ar">ابحث عمّن يستفيد. قد تكون الشركة أو الحملة أو الجهة المناصرة على حق، لكن أرقامها تستحق نظرة ثانية.</span><span lang="en">Look for who benefits. A company, a campaign or an advocacy group may be right, but its numbers deserve a second look.</span></p>
+                <span class="flip__ex"><span lang="ar">مثال: دراسة تموّلها شركة عصير تجد أن العصير صحي.</span><span lang="en">Example: a study paid for by a juice brand finds that juice is healthy.</span></span>
+              </span>
+            </span>
+          </button>
+
+          <button class="flip reveal" type="button" aria-pressed="false">
+            <span class="flip__inner">
+              <span class="flip__face flip__face--front">
+                <span class="flip__n">2 / 5</span>
+                <span class="card__icon card__icon--teal"><svg class="ic" aria-hidden="true"><use href="#i-database"></use></svg></span>
+                <span class="flip__q"><span lang="ar">كيف عرفوا؟</span><span lang="en">How do they know?</span></span>
+                <span class="flip__hint"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">اقلب البطاقة</span><span lang="en">Flip</span></span>
+              </span>
+              <span class="flip__face flip__face--back">
+                <p><span lang="ar">اسأل كيف جُمعت البيانات: كم شخصًا؟ وكيف اختيروا؟ وماذا سُئلوا بالضبط؟</span><span lang="en">Ask how the data were collected: how many people, chosen how, and asked exactly what?</span></p>
+                <span class="flip__ex"><span lang="ar">مثال: استطلاع على الإنترنت بين متابعي العلامة التجارية نفسها.</span><span lang="en">Example: an online poll of the brand's own followers.</span></span>
+              </span>
+            </span>
+          </button>
+
+          <button class="flip reveal" type="button" aria-pressed="false">
+            <span class="flip__inner">
+              <span class="flip__face flip__face--front">
+                <span class="flip__n">3 / 5</span>
+                <span class="card__icon card__icon--warn"><svg class="ic" aria-hidden="true"><use href="#i-eye"></use></svg></span>
+                <span class="flip__q"><span lang="ar">ما الناقص؟</span><span lang="en">What's missing?</span></span>
+                <span class="flip__hint"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">اقلب البطاقة</span><span lang="en">Flip</span></span>
+              </span>
+              <span class="flip__face flip__face--back">
+                <p><span lang="ar">متوسطات بلا تشتّت، ونسب مئوية بلا أعداد أساسية، واتجاهات بلا شيء تُقارن به.</span><span lang="en">Averages without spread, percentages without base numbers, trends without anything to compare them to.</span></p>
+                <span class="flip__ex"><span lang="ar">مثال: «ارتفاع 200%»… من 1 إلى 3.</span><span lang="en">Example: "Up 200%"… from 1 to 3.</span></span>
+              </span>
+            </span>
+          </button>
+
+          <button class="flip reveal" type="button" aria-pressed="false">
+            <span class="flip__inner">
+              <span class="flip__face flip__face--front">
+                <span class="flip__n">4 / 5</span>
+                <span class="card__icon card__icon--trick"><svg class="ic" aria-hidden="true"><use href="#i-shuffle"></use></svg></span>
+                <span class="flip__q"><span lang="ar">هل تغيّر الموضوع؟</span><span lang="en">Did somebody change the subject?</span></span>
+                <span class="flip__hint"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">اقلب البطاقة</span><span lang="en">Flip</span></span>
+              </span>
+              <span class="flip__face flip__face--back">
+                <p><span lang="ar">انتبه للقفزة بين ما قيس فعلًا وما يُدّعى في العنوان.</span><span lang="en">Watch for a jump between what was actually measured and what the headline claims.</span></p>
+                <span class="flip__ex"><span lang="ar">مثال: زيادة الحالات المسجّلة لا تعني بالضرورة زيادة الحالات؛ ربما زاد الفحص.</span><span lang="en">Example: more reported cases may just mean more testing, not more cases.</span></span>
+              </span>
+            </span>
+          </button>
+
+          <button class="flip reveal" type="button" aria-pressed="false">
+            <span class="flip__inner">
+              <span class="flip__face flip__face--front">
+                <span class="flip__n">5 / 5</span>
+                <span class="card__icon card__icon--truth"><svg class="ic" aria-hidden="true"><use href="#i-bulb"></use></svg></span>
+                <span class="flip__q"><span lang="ar">هل يبدو منطقيًا؟</span><span lang="en">Does it make sense?</span></span>
+                <span class="flip__hint"><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">اقلب البطاقة</span><span lang="en">Flip</span></span>
+              </span>
+              <span class="flip__face flip__face--back">
+                <p><span lang="ar">أجرِ حسابًا تقريبيًا سريعًا. إن بدا الرقم مستحيلًا فقد يكون كذلك فعلًا.</span><span lang="en">Do a quick back-of-the-envelope check. If a number sounds impossible, it may be.</span></p>
+                <span class="flip__ex"><span lang="ar">مثال: مدينة سكانها مليون تنتج 5 ملايين طن نفايات يوميًا؟ هذا 5 أطنان لكل شخص كل يوم.</span><span lang="en">Example: a city of 1 million makes 5 million tonnes of waste a day? That is 5 tonnes per person, daily.</span></span>
+              </span>
+            </span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== QUICK CHALLENGE =============================== -->
+    <section class="section section--surface" id="try">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">جرّب الآن</span><span lang="en">Try it now</span></span>
+            <h2><span lang="ar">نفس الأرقام، رسمان مختلفان</span><span lang="en">Same numbers, two charts</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">كلا الرسمين يعرضان نتيجة تصويت واحد: 51% «نعم» و49% «لا». أيهما يُظهر الفرق الحقيقي؟</span>
+            <span lang="en">Both charts show the same vote: 51% "yes" and 49% "no". Which one shows the real difference?</span>
+          </p>
+        </div>
+
+        <div class="grid grid-2" id="quickPick" data-stagger="100">
+          <button class="chart-frame card reveal" type="button" data-pick="a" style="text-align:start"></button>
+          <button class="chart-frame card reveal" type="button" data-pick="b" style="text-align:start"></button>
+        </div>
+        <div id="quickResult" aria-live="polite" style="margin-top:18px"></div>
+      </div>
+    </section>
+
+    <!-- =============================== IMPACT =============================== -->
+    <section class="section section--soft" id="impact">
+      <div class="container">
+        <div class="section-head">
+          <div class="reveal">
+            <span class="eyebrow"><span lang="ar">لماذا يهمّ هذا؟</span><span lang="en">Why it matters</span></span>
+            <h2><span lang="ar">الثقافة الإحصائية مهارة حياتية</span><span lang="en">Statistical literacy is a life skill</span></h2>
+          </div>
+          <p class="reveal">
+            <span lang="ar">لا معادلات هنا. إن كنت تستطيع قراءة رسم بياني بالأعمدة، فأنت جاهز للبدء.</span>
+            <span lang="en">There are no formulas here. If you can read a bar chart, you are ready to start.</span>
+          </p>
+        </div>
+
+        <div class="grid grid-4" data-stagger="90">
+          <article class="card spot reveal">
+            <div class="card__icon card__icon--truth"><svg class="ic" aria-hidden="true"><use href="#i-pulse"></use></svg></div>
+            <h3><span lang="ar">قرارات صحية أوعى</span><span lang="en">Sharper health decisions</span></h3>
+            <p><span lang="ar">افهم ماذا تعني عبارة «يضاعف خطر الإصابة» قبل أن تغيّر نظامك الغذائي أو دواءك.</span><span lang="en">Understand what "doubles your risk" really means before you change your diet or your medicine.</span></p>
+          </article>
+          <article class="card spot reveal">
+            <div class="card__icon card__icon--warn"><svg class="ic" aria-hidden="true"><use href="#i-coin"></use></svg></div>
+            <h3><span lang="ar">مال أقل هدرًا</span><span lang="en">Smarter money</span></h3>
+            <p><span lang="ar">اكشف عروض «خصم يصل إلى 70%» ورسوم الاستثمار التي تبدأ من حيث يناسب البائع.</span><span lang="en">See through "up to 70% off" and investment charts that start wherever suits the seller.</span></p>
+          </article>
+          <article class="card spot reveal">
+            <div class="card__icon"><svg class="ic" aria-hidden="true"><use href="#i-lens"></use></svg></div>
+            <h3><span lang="ar">تفكير نقدي</span><span lang="en">Critical thinking</span></h3>
+            <p><span lang="ar">اسأل عمّا ينقص الرقم بدل أن تقبله أو ترفضه بالحدس.</span><span lang="en">Ask what a number is missing instead of accepting or rejecting it on instinct.</span></p>
+          </article>
+          <article class="card spot reveal">
+            <div class="card__icon card__icon--trick"><svg class="ic" aria-hidden="true"><use href="#i-share"></use></svg></div>
+            <h3><span lang="ar">مشاركة مسؤولة</span><span lang="en">Responsible sharing</span></h3>
+            <p><span lang="ar">توقّف قبل إعادة نشر إحصائية صادمة، وساعد أصدقاءك وعائلتك على فعل الشيء نفسه.</span><span lang="en">Pause before forwarding a shocking statistic, and help friends and family do the same.</span></p>
+          </article>
+        </div>
+
+        <div class="reveal" style="margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;gap:12px">
+          <strong><span lang="ar">لمن هذه المنصة؟</span><span lang="en">Who is it for?</span></strong>
+          <span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-cap"></use></svg><span lang="ar">الطلاب</span><span lang="en">Students</span></span>
+          <span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-book"></use></svg><span lang="ar">المعلمون</span><span lang="en">Teachers</span></span>
+          <span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-news"></use></svg><span lang="ar">الصحفيون</span><span lang="en">Journalists</span></span>
+          <span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-users"></use></svg><span lang="ar">الآباء والأمهات</span><span lang="en">Parents</span></span>
+          <span class="chip"><svg class="ic" aria-hidden="true"><use href="#i-chat"></use></svg><span lang="ar">كل من يتصفح وسائل التواصل</span><span lang="en">Anyone on social media</span></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== NEXT =============================== -->
+    <section class="next-band">
+      <div class="container next-band__inner">
+        <div class="reveal">
+          <h2><span lang="ar">جاهز؟ ابدأ بالرسوم البيانية.</span><span lang="en">Ready? Start with the charts.</span></h2>
+          <p>
+            <span lang="ar">يريك الجزء الأول كيف تبدو الأرقام نفسها هادئة أو كارثية بحسب بضعة اختيارات في التصميم.</span>
+            <span lang="en">Part 1 shows how the same numbers can look calm or catastrophic depending on a few design choices.</span>
+          </p>
+        </div>
+        <div class="next-band__actions reveal">
+          <a class="btn btn--primary" href="charts.html"><span lang="ar">ابدأ الجزء الأول</span><span lang="en">Start part 1</span><svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <a class="btn btn--ghost" href="quiz.html"><span lang="ar">انتقل إلى التحدي</span><span lang="en">Jump to the challenge</span></a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @footer:start -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html">
+            <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+            <span class="brand__name">
+              <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+              <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+            </span>
+          </a>
+          <p lang="ar">منصة تفاعلية تعلّم غير المتخصصين كيف يكتشفون الأرقام المضلِّلة في الأخبار والإعلانات ووسائل التواصل وإجابات الذكاء الاصطناعي.</p>
+          <p lang="en">An interactive platform that teaches non-specialists to spot misleading numbers in the news, ads, social media and AI answers.</p>
+        </div>
+        <div>
+          <h4><span lang="ar">تعلّم</span><span lang="en">Learn</span></h4>
+          <ul>
+            <li><a href="charts.html"><span lang="ar">01 · الرسوم المضلِّلة</span><span lang="en">01 · Misleading charts</span></a></li>
+            <li><a href="traps.html"><span lang="ar">02 · الفخاخ الإحصائية</span><span lang="en">02 · Statistical traps</span></a></li>
+            <li><a href="ai.html"><span lang="ar">03 · الذكاء الاصطناعي مدقِّقًا</span><span lang="en">03 · AI as a fact-checker</span></a></li>
+            <li><a href="cases.html"><span lang="ar">04 · حالات واقعية</span><span lang="en">04 · Real cases</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4><span lang="ar">تدرّب</span><span lang="en">Practice</span></h4>
+          <ul>
+            <li><a href="quiz.html"><span lang="ar">هل هذا الرسم صادق؟</span><span lang="en">Is this chart honest?</span></a></li>
+            <li><a href="charts.html#spot"><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></a></li>
+            <li><a href="ai.html#builder"><span lang="ar">مُنشئ أسئلة التحقق</span><span lang="en">Fact-check prompt builder</span></a></li>
+            <li><a href="cases.html#xray"><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© <span data-year>2026</span> <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span></span>
+        <span lang="ar">الأمثلة الموسومة بـ«توضيحي» تستخدم أرقامًا مصطنعة؛ الحالات الواقعية تذكر مصادرها.</span>
+        <span lang="en">Examples marked "illustrative" use made-up numbers; real cases name their sources.</span>
+      </div>
+    </div>
+  </footer>
+  <button class="to-top" type="button" data-i18n-attrs="aria-label" data-aria-label-ar="العودة إلى الأعلى" data-aria-label-en="Back to top" aria-label="العودة إلى الأعلى">
+    <svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23"/></svg>
+    <svg class="ic" aria-hidden="true"><use href="#i-up"></use></svg>
+  </button>
+  <!-- @footer:end -->
+</body>
+</html>

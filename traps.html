@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <title>Statistical traps · DataLens</title>
+  <meta name="description" content="Part 2 of DataLens: correlation vs causation, sampling bias, Simpson's paradox, small samples and relative vs absolute risk, each with a simulation you can run.">
+  <!-- @head:start -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#1e4fd6">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alexandria:wght@500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap">
+  <link rel="stylesheet" href="assets/css/datalens.css">
+  <script>
+    (function () {
+      var d = document.documentElement, s = {};
+      try { s = JSON.parse(localStorage.getItem("datalens:v1")) || {}; } catch (e) {}
+      var q = /[?&]lang=(ar|en)/.exec(location.search);
+      var l = q ? q[1] : s.lang || "ar";
+      d.lang = l;
+      d.dir = l === "ar" ? "rtl" : "ltr";
+      if (s.theme === "dark" || s.theme === "light") d.setAttribute("data-theme", s.theme);
+      d.classList.add("js");
+    })();
+  </script>
+  <script src="assets/js/core.js" defer></script>
+  <script src="assets/js/chart.js" defer></script>
+  <!-- @head:end -->
+  <script src="assets/js/part2.js" defer></script>
+</head>
+<body data-page="traps" data-title-ar="الفخاخ الإحصائية · عدسة البيانات" data-title-en="Statistical traps · DataLens">
+  <!-- @nav:start -->
+  <a class="skip-link" href="#main"><span lang="ar">تخطَّ إلى المحتوى</span><span lang="en">Skip to content</span></a>
+  <div class="read-progress" aria-hidden="true"></div>
+  <header class="nav">
+    <div class="container nav__inner">
+      <a class="brand" href="index.html">
+        <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+        <span class="brand__name">
+          <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+          <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+        </span>
+      </a>
+      <nav aria-label="Main" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة الرئيسية" data-aria-label-en="Main">
+        <ul class="nav__links" id="nav-links">
+          <li><a class="nav__link" data-nav="home" href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a></li>
+          <li><a class="nav__link" data-nav="charts" href="charts.html"><span class="nav__num">01</span><span lang="ar">الرسوم المضلِّلة</span><span lang="en">Charts</span></a></li>
+          <li><a class="nav__link" data-nav="traps" href="traps.html"><span class="nav__num">02</span><span lang="ar">الفخاخ الإحصائية</span><span lang="en">Traps</span></a></li>
+          <li><a class="nav__link" data-nav="ai" href="ai.html"><span class="nav__num">03</span><span lang="ar">الذكاء الاصطناعي</span><span lang="en">AI check</span></a></li>
+          <li><a class="nav__link" data-nav="cases" href="cases.html"><span class="nav__num">04</span><span lang="ar">حالات واقعية</span><span lang="en">Real cases</span></a></li>
+        </ul>
+      </nav>
+      <div class="nav__tools">
+        <button class="tool-btn" type="button" data-lang-toggle>
+          <svg class="ic" aria-hidden="true"><use href="#i-globe"></use></svg><span class="lang-label">EN</span>
+        </button>
+        <button class="tool-btn theme-btn" type="button" data-theme-toggle data-i18n-attrs="aria-label" data-aria-label-ar="الوضع الداكن" data-aria-label-en="Dark mode" aria-label="الوضع الداكن">
+          <svg class="ic ic-moon" aria-hidden="true"><use href="#i-moon"></use></svg>
+          <svg class="ic ic-sun" aria-hidden="true"><use href="#i-sun"></use></svg>
+        </button>
+        <a class="nav__cta" href="quiz.html" data-nav="quiz">
+          <svg class="ic" aria-hidden="true"><use href="#i-trophy"></use></svg>
+          <span><span lang="ar">التحدي</span><span lang="en">Challenge</span></span>
+        </a>
+        <button class="tool-btn nav__toggle" type="button" aria-expanded="false" aria-controls="nav-links" data-i18n-attrs="aria-label" data-aria-label-ar="القائمة" data-aria-label-en="Menu" aria-label="القائمة">
+          <svg class="ic" aria-hidden="true"><use href="#i-menu"></use></svg>
+        </button>
+      </div>
+    </div>
+  </header>
+  <!-- @nav:end -->
+
+  <main id="main">
+    <!-- =============================== HERO =============================== -->
+    <section class="page-hero">
+      <div class="container page-hero__grid">
+        <div>
+          <nav class="crumbs enter" aria-label="Breadcrumb">
+            <a href="index.html"><span lang="ar">الرئيسية</span><span lang="en">Home</span></a>
+            <svg class="ic flip-rtl" aria-hidden="true"><use href="#i-chevron"></use></svg>
+            <span><span lang="ar">الجزء الثاني</span><span lang="en">Part 2</span></span>
+          </nav>
+          <div class="part-tag enter" style="--d:60ms">
+            <span class="part-tag__num"><span lang="ar">الجزء 2 من 4</span><span lang="en">Part 2 of 4</span></span>
+            <span class="part-dots" aria-hidden="true"><i class="on"></i><i class="on"></i><i></i><i></i></span>
+          </div>
+          <h1 class="enter" style="--d:120ms">
+            <span lang="ar">فخاخ إحصائية <span class="hl hl-anim">شائعة</span></span>
+            <span lang="en">Common statistical <span class="hl hl-anim">traps</span></span>
+          </h1>
+          <p class="page-hero__lede enter" style="--d:180ms">
+            <span lang="ar">الرسوم ليست المكان الوحيد الذي تضلّل فيه الأرقام. هذه الفخاخ الخمسة تختبئ في البيانات نفسها، ولكل منها محاكاة: غيّر المدخلات وشاهد الاستنتاج ينقلب.</span>
+            <span lang="en">Charts aren't the only place numbers mislead. These five traps hide in the data itself, and each comes with a simulation: change the inputs and watch the conclusion flip.</span>
+          </p>
+        </div>
+        <div class="page-hero__visual enter" style="--d:200ms" aria-hidden="true">
+          <div class="orbit">
+            <div class="orbit__core">
+              <svg viewBox="0 0 24 24" class="ic" style="width:56%;height:56%;color:var(--teal)"><use href="#i-dice"></use></svg>
+            </div>
+            <span class="note-chip note-chip--1 mono"><svg class="ic"><use href="#i-link"></use></svg>r = 0.86</span>
+            <span class="note-chip note-chip--2 mono" style="--d:1s"><svg class="ic"><use href="#i-users"></use></svg>n = 5</span>
+            <span class="note-chip note-chip--3" style="--d:2s"><svg class="ic"><use href="#i-alert"></use></svg><span lang="ar">ليس سببًا</span><span lang="en">not a cause</span></span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="subnav" aria-label="Sections" data-i18n-attrs="aria-label" data-aria-label-ar="أقسام الصفحة" data-aria-label-en="Sections">
+      <div class="container">
+        <ul class="subnav__list">
+          <li><a href="#correlation"><span class="mono">01</span><span lang="ar">الارتباط والسببية</span><span lang="en">Correlation vs causation</span></a></li>
+          <li><a href="#sampling"><span class="mono">02</span><span lang="ar">تحيّز العيّنة</span><span lang="en">Sampling bias</span></a></li>
+          <li><a href="#simpson"><span class="mono">03</span><span lang="ar">مفارقة سيمبسون</span><span lang="en">Simpson's paradox</span></a></li>
+          <li><a href="#small"><span class="mono">04</span><span lang="ar">العيّنات الصغيرة</span><span lang="en">Small samples</span></a></li>
+          <li><a href="#risk"><span class="mono">05</span><span lang="ar">الخطر النسبي والمطلق</span><span lang="en">Relative vs absolute risk</span></a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- =============================== 1 CORRELATION =============================== -->
+    <section class="section trap" id="correlation">
+      <div class="container">
+        <header class="trap__head reveal">
+          <span class="trap__num">01</span>
+          <div>
+            <h2><span lang="ar">الارتباط ليس سببية</span><span lang="en">Correlation is not causation</span></h2>
+            <p><span lang="ar">حين يرتفع شيئان وينخفضان معًا، نميل إلى القول إن أحدهما سبب الآخر. كثيرًا ما يحرّكهما عامل ثالث، أو يكون السهم معكوسًا، أو تكون مجرد مصادفة.</span><span lang="en">When two things rise and fall together, it is tempting to say one causes the other. Often a third factor drives both, the arrow points the other way, or it is pure chance.</span></p>
+          </div>
+        </header>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon card__icon--teal"><svg class="ic" aria-hidden="true"><use href="#i-link"></use></svg></span>
+              <span><span lang="ar">مبيعات المثلجات مقابل حوادث الغرق</span><span lang="en">Ice cream sales vs drownings</span></span>
+            </div>
+            <span class="badge badge--warn"><span lang="ar">بيانات توضيحية</span><span lang="en">Illustrative data</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage">
+              <div id="corrChart"></div>
+              <div id="corrDiagram" style="margin-top:12px" hidden></div>
+            </div>
+            <div class="lab__side">
+              <label class="switch">
+                <input type="checkbox" id="corrReveal">
+                <span class="switch__track"></span>
+                <span><span lang="ar">اكشف العامل الخفي</span><span lang="en">Reveal the hidden factor</span></span>
+              </label>
+              <div class="readouts">
+                <div class="readout"><span><span lang="ar">معامل الارتباط</span><span lang="en">Correlation (r)</span></span><strong id="corrR">—</strong></div>
+                <div class="readout"><span><span lang="ar">عدد الأسابيع</span><span lang="en">Weeks of data</span></span><strong>26</strong></div>
+              </div>
+              <div id="corrLegend" hidden>
+                <div style="height:10px;border-radius:999px;background:linear-gradient(90deg,hsl(195 75% 45%),hsl(45 90% 50%),hsl(8 78% 52%));direction:ltr"></div>
+                <div class="range-scale" style="margin-top:4px"><span>15°C</span><span><span lang="ar">درجة الحرارة</span><span lang="en">temperature</span></span><span>35°C</span></div>
+              </div>
+              <div class="verdict" id="corrVerdict" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="explain-grid" style="margin-top:20px" data-stagger="80">
+          <div class="mini reveal"><h4><svg class="ic" aria-hidden="true"><use href="#i-arrow"></use></svg><span lang="ar">سببية</span><span lang="en">Causation</span></h4><p><span lang="ar">(أ) يسبّب (ب) فعلًا. يحتاج إثباتها عادةً إلى تجارب أو أدلة كثيرة متّسقة.</span><span lang="en">A really does cause B. Proving it usually takes experiments or many consistent lines of evidence.</span></p></div>
+          <div class="mini reveal"><h4><svg class="ic" aria-hidden="true"><use href="#i-restart"></use></svg><span lang="ar">سببية معكوسة</span><span lang="en">Reverse causation</span></h4><p><span lang="ar">(ب) هو الذي يسبّب (أ)، لا العكس.</span><span lang="en">B causes A, not the other way round.</span></p></div>
+          <div class="mini reveal"><h4><svg class="ic" aria-hidden="true"><use href="#i-eye"></use></svg><span lang="ar">عامل ثالث خفي</span><span lang="en">Hidden third factor</span></h4><p><span lang="ar">شيء آخر (ج) يحرّك (أ) و(ب) معًا. يُسمّى «المتغيّر المُربِك».</span><span lang="en">Something else, C, drives both A and B. Statisticians call it a confounder.</span></p></div>
+          <div class="mini reveal"><h4><svg class="ic" aria-hidden="true"><use href="#i-dice"></use></svg><span lang="ar">مصادفة</span><span lang="en">Coincidence</span></h4><p><span lang="ar">ابحث في آلاف السلاسل وستجد بعضها متطابقًا بالحظ وحده.</span><span lang="en">Search thousands of data series and some will match by luck alone.</span></p></div>
+        </div>
+
+        <div style="margin-top:36px">
+          <h3 class="reveal" style="font-size:1.35rem;margin-bottom:6px"><span lang="ar">أي تفسير يناسب؟</span><span lang="en">Which explanation fits?</span></h3>
+          <p class="reveal txt-muted" style="margin-bottom:18px"><span lang="ar">اختر التفسير الأرجح لكل ادعاء.</span><span lang="en">Pick the most likely explanation for each claim.</span> <strong class="mono" id="corrScore"></strong></p>
+          <div class="grid grid-2" id="corrQuiz" data-stagger="80"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== 2 SAMPLING =============================== -->
+    <section class="section section--soft trap" id="sampling">
+      <div class="container">
+        <header class="trap__head reveal">
+          <span class="trap__num">02</span>
+          <div>
+            <h2><span lang="ar">تحيّز العيّنة</span><span lang="en">Sampling bias</span></h2>
+            <p><span lang="ar">العيّنة مفيدة فقط إن كانت تشبه المجتمع كله. اسأل الأشخاص الخطأ، أو اترك المتحمسين وحدهم يجيبون، وستخطئ حتى العيّنة الضخمة خطأً كبيرًا.</span><span lang="en">A sample is only useful if it looks like the whole population. Ask the wrong people, or let only the keenest answer, and even a huge sample can be badly wrong.</span></p>
+          </div>
+        </header>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon"><svg class="ic" aria-hidden="true"><use href="#i-users"></use></svg></span>
+              <span><span lang="ar">بلدة من 400 شخص: هل تؤيد بناء ملعب جديد؟</span><span lang="en">A town of 400: do you support a new stadium?</span></span>
+            </div>
+            <span class="badge badge--teal"><span lang="ar">محاكاة</span><span lang="en">Simulation</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage"><div id="sampleGrid" style="max-width:500px;margin-inline:auto"></div></div>
+            <div class="lab__side">
+              <div class="control">
+                <span class="control__label"><span><span lang="ar">طريقة جمع العيّنة</span><span lang="en">How we sample</span></span></span>
+                <div class="seg" id="sampleMethod" role="group">
+                  <button type="button" data-value="random" aria-pressed="true"><span lang="ar">عشوائية</span><span lang="en">Random</span></button>
+                  <button type="button" data-value="stadium" aria-pressed="false"><span lang="ar">أمام الملعب</span><span lang="en">At the stadium</span></button>
+                  <button type="button" data-value="online" aria-pressed="false"><span lang="ar">استطلاع إلكتروني</span><span lang="en">Online poll</span></button>
+                  <button type="button" data-value="library" aria-pressed="false"><span lang="ar">في المكتبة</span><span lang="en">At the library</span></button>
+                </div>
+              </div>
+              <button class="btn btn--soft btn--sm" type="button" id="sampleAgain"><svg class="ic" aria-hidden="true"><use href="#i-shuffle"></use></svg><span lang="ar">اسحب عيّنة جديدة</span><span lang="en">Draw a new sample</span></button>
+              <div class="readouts">
+                <div class="readout"><span><span lang="ar">حجم العيّنة</span><span lang="en">Sample size</span></span><strong id="sampleN">—</strong></div>
+                <div class="readout"><span><span lang="ar">الخطأ</span><span lang="en">Error</span></span><strong id="sampleErr">—</strong></div>
+              </div>
+              <div class="readouts" id="sampleBars" style="grid-template-columns:1fr"></div>
+              <div class="verdict" id="sampleVerdict" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:28px;align-items:stretch">
+          <div class="chart-frame reveal" style="display:grid;place-items:center;padding:20px">
+            <div id="plane" style="width:100%;max-width:380px"></div>
+          </div>
+          <div class="q-inline reveal" style="align-content:start">
+            <span class="eyebrow" style="margin:0"><span lang="ar">فخ قريب: تحيّز النجاة</span><span lang="en">A close cousin: survivorship bias</span></span>
+            <p class="q-inline__claim">
+              <span lang="ar">في الحرب العالمية الثانية، عادت القاذفات وفي أجنحتها وجسمها ثقوب رصاص كثيرة، بينما كانت المحركات وقمرة القيادة سليمة تقريبًا. أين يجب إضافة الدروع؟</span>
+              <span lang="en">In World War II, returning bombers had plenty of bullet holes in their wings and body, while the engines and cockpit were mostly untouched. Where should engineers add armour?</span>
+            </p>
+            <div class="chip-row" id="armorChoice">
+              <button class="chip" type="button" data-armor="holes"><span lang="ar">حيث توجد الثقوب</span><span lang="en">Where the holes are</span></button>
+              <button class="chip" type="button" data-armor="clean"><span lang="ar">حيث لا توجد ثقوب</span><span lang="en">Where there are no holes</span></button>
+            </div>
+            <div id="armorResult" aria-live="polite"></div>
+            <div class="callout" style="margin-top:auto">
+              <svg class="ic" aria-hidden="true"><use href="#i-news"></use></svg>
+              <div>
+                <h4><span lang="ar">حالة واقعية</span><span lang="en">A real case</span></h4>
+                <p><span lang="ar">عام 1936 جمعت مجلة أمريكية 2.4 مليون إجابة، وأخطأت مع ذلك في توقّع الانتخابات الرئاسية.</span><span lang="en">In 1936 a US magazine collected 2.4 million replies and still called the presidential election wrong.</span> <a class="txt-lens" style="font-weight:600" href="cases.html#case-digest"><span lang="ar">اقرأ القصة ←</span><span lang="en">Read the story →</span></a></p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== 3 SIMPSON =============================== -->
+    <section class="section trap" id="simpson">
+      <div class="container">
+        <header class="trap__head reveal">
+          <span class="trap__num">03</span>
+          <div>
+            <h2><span lang="ar">مفارقة سيمبسون</span><span lang="en">Simpson's paradox</span></h2>
+            <p><span lang="ar">قد يظهر اتجاه في كل مجموعة على حدة، ثم ينقلب حين نجمع المجموعات. يحدث ذلك عندما تختلف المجموعات في حجمها أو صعوبتها.</span><span lang="en">A trend can appear in every group separately, then reverse when the groups are combined. It happens when the groups differ in size or difficulty.</span></p>
+          </div>
+        </header>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon card__icon--truth"><svg class="ic" aria-hidden="true"><use href="#i-flask"></use></svg></span>
+              <span><span lang="ar">علاجان لحصى الكلى: أيهما أنجح؟</span><span lang="en">Two kidney-stone treatments: which works better?</span></span>
+            </div>
+            <span class="badge badge--truth"><span lang="ar">بيانات حقيقية · 1986</span><span lang="en">Real data · 1986</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage"><div id="simpsonChart"></div></div>
+            <div class="lab__side">
+              <div class="seg" id="simpsonView" role="group" style="display:grid;grid-template-columns:1fr">
+                <button type="button" data-value="overall" aria-pressed="true"><span lang="ar">1. كل المرضى معًا</span><span lang="en">1. All patients together</span></button>
+                <button type="button" data-value="size" aria-pressed="false"><span lang="ar">2. حسب حجم الحصاة</span><span lang="en">2. Split by stone size</span></button>
+                <button type="button" data-value="mix" aria-pressed="false"><span lang="ar">3. من تلقّى أي علاج؟</span><span lang="en">3. Who got which treatment?</span></button>
+              </div>
+              <div class="verdict" id="simpsonText" aria-live="polite"></div>
+              <p class="source-line">
+                <span lang="ar">المصدر: Charig وآخرون، المجلة الطبية البريطانية (BMJ)، 1986. العلاج (أ): الجراحة المفتوحة؛ العلاج (ب): استخراج الحصى عبر الجلد.</span>
+                <span lang="en">Source: Charig et al., British Medical Journal, 1986. Treatment A: open surgery; treatment B: percutaneous nephrolithotomy.</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== 4 SMALL SAMPLES =============================== -->
+    <section class="section section--soft trap" id="small">
+      <div class="container">
+        <header class="trap__head reveal">
+          <span class="trap__num">04</span>
+          <div>
+            <h2><span lang="ar">العيّنات الصغيرة</span><span lang="en">Small samples</span></h2>
+            <p><span lang="ar">مع ملاحظات قليلة، تظهر النتائج المتطرفة بالحظ وحده. ارمِ عملة عادلة 5 مرات، وستظهر نتيجة «العملة منحازة!» أكثر مما تتوقع.</span><span lang="en">With few observations, extreme results appear by luck alone. Toss a fair coin 5 times and "this coin is biased!" turns up more often than you would expect.</span></p>
+          </div>
+        </header>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon card__icon--warn"><svg class="ic" aria-hidden="true"><use href="#i-coin"></use></svg></span>
+              <span><span lang="ar">100 دراسة على عملة عادلة</span><span lang="en">100 studies of a fair coin</span></span>
+            </div>
+            <span class="badge badge--teal"><span lang="ar">محاكاة</span><span lang="en">Simulation</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage"><div id="smallChart"></div></div>
+            <div class="lab__side">
+              <div class="control">
+                <span class="control__label"><span><span lang="ar">رميات في كل دراسة</span><span lang="en">Tosses per study</span></span></span>
+                <div class="seg" id="smallN" role="group">
+                  <button type="button" data-value="5" aria-pressed="false">5</button>
+                  <button type="button" data-value="10" aria-pressed="true">10</button>
+                  <button type="button" data-value="30" aria-pressed="false">30</button>
+                  <button type="button" data-value="100" aria-pressed="false">100</button>
+                  <button type="button" data-value="1000" aria-pressed="false">1000</button>
+                </div>
+              </div>
+              <button class="btn btn--primary btn--sm" type="button" id="smallRun"><svg class="ic" aria-hidden="true"><use href="#i-play"></use></svg><span lang="ar">أجرِ 100 دراسة جديدة</span><span lang="en">Run 100 new studies</span></button>
+              <div class="readouts">
+                <div class="readout" id="smallExtremeBox"><span><span lang="ar">نتائج «صادمة»</span><span lang="en">"Shocking" results</span></span><strong id="smallExtreme">—</strong></div>
+                <div class="readout"><span><span lang="ar">هامش الخطأ (95%)</span><span lang="en">Margin of error (95%)</span></span><strong id="smallMoe">—</strong></div>
+              </div>
+              <p class="lab__note"><span lang="ar">«صادمة» تعني 30% صورًا أو أقل، أو 70% أو أكثر: نتيجة تكفي لعنوان يقول إن العملة منحازة.</span><span lang="en">"Shocking" means 30% heads or fewer, or 70% or more: enough for a headline claiming the coin is biased.</span></p>
+              <div class="verdict" id="smallVerdict" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="margin-top:28px">
+          <div class="q-inline reveal" id="hospital">
+            <span class="eyebrow" style="margin:0"><span lang="ar">سؤال كلاسيكي</span><span lang="en">A classic question</span></span>
+            <p class="q-inline__claim">
+              <span lang="ar">في بلدة مستشفيان: يولد في الكبير نحو 45 طفلًا يوميًا، وفي الصغير نحو 15. أيهما يسجّل أيامًا أكثر يكون فيها أكثر من 60% من المواليد ذكورًا؟</span>
+              <span lang="en">A town has two hospitals: about 45 babies are born each day in the larger one and about 15 in the smaller one. Which records more days when over 60% of the babies are boys?</span>
+            </p>
+            <div class="chip-row">
+              <button class="chip" type="button" data-hosp="large"><span lang="ar">المستشفى الكبير</span><span lang="en">The larger hospital</span></button>
+              <button class="chip" type="button" data-hosp="small"><span lang="ar">المستشفى الصغير</span><span lang="en">The smaller hospital</span></button>
+              <button class="chip" type="button" data-hosp="same"><span lang="ar">تقريبًا متساويان</span><span lang="en">About the same</span></button>
+            </div>
+            <div id="hospResult" aria-live="polite"></div>
+          </div>
+          <div class="callout reveal" style="align-self:start">
+            <svg class="ic" aria-hidden="true"><use href="#i-target"></use></svg>
+            <div>
+              <h4><span lang="ar">«المعادلة الأخطر»</span><span lang="en">"The most dangerous equation"</span></h4>
+              <p><span lang="ar">لاحظ الإحصائي هوارد وينر (2007) أن المقاطعات الأمريكية ذات أدنى معدلات سرطان الكلى كانت غالبًا صغيرة وريفية، وكذلك المقاطعات ذات الأعلى معدلات. السكان القليلون يتأرجحون إلى الطرفين بالصدفة. قبل أن تحتفي بـ«أفضل مدرسة» أو تحذّر من «أسوأ مدينة»، اسأل: كم كان حجمها؟</span><span lang="en">Statistician Howard Wainer (2007) noted that the US counties with the lowest kidney-cancer rates were mostly small and rural, and so were the counties with the highest rates. Small populations swing to both extremes by chance. Before celebrating the "best school" or warning about the "worst town", ask how big it was.</span></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== 5 RISK =============================== -->
+    <section class="section trap" id="risk">
+      <div class="container">
+        <header class="trap__head reveal">
+          <span class="trap__num">05</span>
+          <div>
+            <h2><span lang="ar">الخطر النسبي مقابل الخطر المطلق</span><span lang="en">Relative vs absolute risk</span></h2>
+            <p><span lang="ar">«يضاعف خطر الإصابة» عبارة مخيفة. ضِعف ماذا؟ التغيّر النسبي الكبير قد يكون تغيّرًا مطلقًا صغيرًا جدًا حين يكون الخطر الأصلي صغيرًا.</span><span lang="en">"Doubles your risk" sounds alarming. Double what? A big relative change can be a tiny absolute change when the starting risk is small.</span></p>
+          </div>
+        </header>
+
+        <div class="lab reveal">
+          <div class="lab__head">
+            <div class="lab__title">
+              <span class="card__icon card__icon--trick"><svg class="ic" aria-hidden="true"><use href="#i-percent"></use></svg></span>
+              <span><span lang="ar">مترجم العناوين: من النسبة إلى الأشخاص</span><span lang="en">Headline translator: from percentages to people</span></span>
+            </div>
+            <span class="badge badge--warn"><span lang="ar">أداة</span><span lang="en">Tool</span></span>
+          </div>
+          <div class="lab__body">
+            <div class="lab__stage">
+              <p id="riskHeadline" style="margin:0 0 4px;font-family:var(--f-display);font-weight:800;font-size:clamp(1.1rem,2.4vw,1.5rem);line-height:1.35;color:var(--redpen)"></p>
+              <p id="riskPlain" style="margin:0 0 12px;font-weight:600"></p>
+              <div id="riskGrid"></div>
+              <div class="legend" id="riskLegend"></div>
+            </div>
+            <div class="lab__side">
+              <div class="control">
+                <label class="control__label" for="riskBase"><span><span lang="ar">الخطر الأصلي (لكل 1000 شخص)</span><span lang="en">Starting risk (per 1,000 people)</span></span><output id="riskBaseOut" for="riskBase"></output></label>
+                <input class="range" type="range" id="riskBase" min="1" max="100" step="1" value="2">
+              </div>
+              <div class="control">
+                <label class="control__label" for="riskRel"><span><span lang="ar">الزيادة النسبية في العنوان</span><span lang="en">Relative increase in the headline</span></span><output id="riskRelOut" for="riskRel"></output></label>
+                <input class="range" type="range" id="riskRel" min="0" max="300" step="5" value="50">
+              </div>
+              <div class="readouts">
+                <div class="readout is-bad"><span><span lang="ar">الزيادة النسبية</span><span lang="en">Relative change</span></span><strong id="riskRelR">—</strong></div>
+                <div class="readout is-good"><span><span lang="ar">الزيادة المطلقة</span><span lang="en">Absolute change</span></span><strong id="riskAbs">—</strong></div>
+                <div class="readout readout--wide"><span><span lang="ar">كم شخصًا يجب أن يتعرّض لتظهر حالة إضافية واحدة؟</span><span lang="en">People exposed for one extra case</span></span><strong id="riskNnh">—</strong></div>
+              </div>
+              <div class="verdict" id="riskVerdict" aria-live="polite"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="callout reveal" style="margin-top:20px">
+          <svg class="ic" aria-hidden="true"><use href="#i-percent"></use></svg>
+          <div>
+            <h4><span lang="ar">النسبة المئوية أم النقاط المئوية؟</span><span lang="en">Percent or percentage points?</span></h4>
+            <p><span lang="ar">الارتفاع من 4% إلى 6% هو زيادة بنقطتين مئويتين، أو بنسبة 50%. كلاهما صحيح، والعنوان يختار عادةً الرقم الأكثر إثارة. اطلب الرقمين دائمًا.</span><span lang="en">A rise from 4% to 6% is an increase of 2 percentage points, or of 50%. Both are true, and headlines usually pick the more dramatic one. Always ask for both.</span></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================== NEXT =============================== -->
+    <section class="next-band">
+      <div class="container next-band__inner">
+        <div class="reveal">
+          <h2><span lang="ar">أصبحت ترى الفخاخ. الآن، استعن بمساعد.</span><span lang="en">You can see the traps. Now get an assistant.</span></h2>
+          <p>
+            <span lang="ar">الجزء الثالث يعلّمك كيف تستخدم ChatGPT وClaude وGemini لمساءلة الأرقام، وكيف تكتشف حين يخترع الذكاء الاصطناعي أرقامه.</span>
+            <span lang="en">Part 3 shows you how to use ChatGPT, Claude and Gemini to question numbers, and how to catch AI when it invents its own.</span>
+          </p>
+        </div>
+        <div class="next-band__actions reveal">
+          <a class="btn btn--primary" href="ai.html"><span lang="ar">الجزء الثالث: الذكاء الاصطناعي</span><span lang="en">Part 3: AI as a fact-checker</span><svg class="ic ic-arrow" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <button class="btn btn--ghost" type="button" data-complete></button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- @footer:start -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer__grid">
+        <div>
+          <a class="brand" href="index.html">
+            <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true">
+          <rect x="30" y="29" width="8" height="17" rx="4" transform="rotate(-45 34 37.5)" style="fill:var(--ink)"/>
+          <circle cx="20" cy="20" r="17" style="fill:var(--lens)"/>
+          <circle cx="20" cy="20" r="13" style="fill:var(--surface)"/>
+          <rect x="11.5" y="19" width="4.5" height="9" rx="1.2" style="fill:var(--lens)"/>
+          <rect x="17.8" y="12.5" width="4.5" height="15.5" rx="1.2" style="fill:var(--teal)"/>
+          <rect x="24" y="16" width="4.5" height="12" rx="1.2" style="fill:var(--redpen)"/>
+        </svg>
+            <span class="brand__name">
+              <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span>
+              <small><span class="only-ar" lang="en" data-keep>DataLens</span><span class="only-en" lang="ar" data-keep>عدسة البيانات</span></small>
+            </span>
+          </a>
+          <p lang="ar">منصة تفاعلية تعلّم غير المتخصصين كيف يكتشفون الأرقام المضلِّلة في الأخبار والإعلانات ووسائل التواصل وإجابات الذكاء الاصطناعي.</p>
+          <p lang="en">An interactive platform that teaches non-specialists to spot misleading numbers in the news, ads, social media and AI answers.</p>
+        </div>
+        <div>
+          <h4><span lang="ar">تعلّم</span><span lang="en">Learn</span></h4>
+          <ul>
+            <li><a href="charts.html"><span lang="ar">01 · الرسوم المضلِّلة</span><span lang="en">01 · Misleading charts</span></a></li>
+            <li><a href="traps.html"><span lang="ar">02 · الفخاخ الإحصائية</span><span lang="en">02 · Statistical traps</span></a></li>
+            <li><a href="ai.html"><span lang="ar">03 · الذكاء الاصطناعي مدقِّقًا</span><span lang="en">03 · AI as a fact-checker</span></a></li>
+            <li><a href="cases.html"><span lang="ar">04 · حالات واقعية</span><span lang="en">04 · Real cases</span></a></li>
+          </ul>
+        </div>
+        <div>
+          <h4><span lang="ar">تدرّب</span><span lang="en">Practice</span></h4>
+          <ul>
+            <li><a href="quiz.html"><span lang="ar">هل هذا الرسم صادق؟</span><span lang="en">Is this chart honest?</span></a></li>
+            <li><a href="charts.html#spot"><span lang="ar">اكتشف الخدعة</span><span lang="en">Spot the trick</span></a></li>
+            <li><a href="ai.html#builder"><span lang="ar">مُنشئ أسئلة التحقق</span><span lang="en">Fact-check prompt builder</span></a></li>
+            <li><a href="cases.html#xray"><span lang="ar">أشعة الادعاءات</span><span lang="en">Claim X-ray</span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer__bottom">
+        <span>© <span data-year>2026</span> <span lang="ar">عدسة البيانات</span><span lang="en">DataLens</span></span>
+        <span lang="ar">الأمثلة الموسومة بـ«توضيحي» تستخدم أرقامًا مصطنعة؛ الحالات الواقعية تذكر مصادرها.</span>
+        <span lang="en">Examples marked "illustrative" use made-up numbers; real cases name their sources.</span>
+      </div>
+    </div>
+  </footer>
+  <button class="to-top" type="button" data-i18n-attrs="aria-label" data-aria-label-ar="العودة إلى الأعلى" data-aria-label-en="Back to top" aria-label="العودة إلى الأعلى">
+    <svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="23"/><circle class="fg" cx="26" cy="26" r="23"/></svg>
+    <svg class="ic" aria-hidden="true"><use href="#i-up"></use></svg>
+  </button>
+  <!-- @footer:end -->
+</body>
+</html>
